@@ -61,6 +61,8 @@ class Trainer:
                     self.clip_gradients(self.gradient_clip_val, self.model)
                 self.optim.step()
 
+            self.trainer_statistics.endBatch()
+
 
         if self.val_dataloader is None:
             return
@@ -72,6 +74,9 @@ class Trainer:
             with torch.no_grad():
                 loss = self.model.validation_step(self.prepare_batch(batch))
                 self.trainer_statistics.setBatchStat("loss", loss)
+
+
+            self.trainer_statistics.endBatch()
 
     def clip_gradients(self, grad_clip_val, model):
         params = [p for p in model.parameters() if p.requires_grad]

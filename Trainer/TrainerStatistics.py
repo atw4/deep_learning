@@ -3,6 +3,7 @@
 from Utility.Timer import Timer
 from ProgressBoard import ProgressBoard
 import torch
+import time
 
 class TrainerStatistics:
     def __init__(self, capture_train_per_epoch=1, capture_valid_per_epoch=1):
@@ -30,21 +31,33 @@ class TrainerStatistics:
             False : 0
         }
 
-        self.activeBatch = None
+        self.active_batch = None
+        self.active_epoch = None
 
     def startEpoch(self):
-        self.timer = Timer()
-        self.epochs.append({})
+        self.active_epoch = {}
+        self.epochs.append(self.active_epoch)
+
+        self.active_epoch["start_time"] = time.time()
+
+
+        if len(self.epochs) <= 1:
+            self.active_epoch["rel_start_time"] = 0
+            self.active_epoch["epoch_idx"] = 0
+        else:
+            last_epoch = self.epochs[-2]
+            self.active_epoch["rel_start_time"] = last_epoch["rel_start_time"] + (self.active_epoch["start_time"] - last_epoch["start_time"])
+            self.active_epoch["epoch_idx"] = last_epoch["epoch_idx"] + 1
 
     def stopEpoch(self):
-        self.timer.stop()
-        self.epochs[-1]["time"] = self.timer.cumsum()
-        self.timer = None
+        self.active_epoch["end_time"] = time.time()
+        self.active_epoch["rel_end_time"] = self.active_epoch["rel_start_time"] + (self.active_epoch["end_time"] - self.active_epoch["start_time"])
+        self.active_epoch = None
 
+            
     def setNumBatches(self, num_train_batches, num_val_batches):
         self.num_batches[True] = num_train_batches
         self.num_batches[False] = num_val_batches
-
 
     def startBatch(self, train, batch_idx):
         self.train = train
@@ -52,21 +65,30 @@ class TrainerStatistics:
         #Should we capture this batch
         cap = self.num_batches[train] // self.capture_per_epoch[train]
         if batch_idx % cap != 0:
-            self.activeBatch = None
+            self.active_batch = None
             return
 
-        self.activeBatch = {"epoch" : len(self.epochs), "batch_idx" : batch_idx}
-        self.activeBatch["x"] = self.getX(self.activeBatch["epoch"], self.activeBatch["batch_idx"], train)
+        self.active_batch = {"epoch" : len(self.epochs), "batch_idx" : batch_idx}
+        self.active_batch["x"] = self.getX(len(self.epochs), self.active_batch["batch_idx"], train)
+        self.active_batch["start_time"] = time.time()
+        self.active_batch["rel_start_time"] = self.active_epoch["rel_start_time"] + (self.active_batch["start_time"] - self.active_epoch["start_time"])
 
-        self.batches[train].append(self.activeBatch)
+        self.batches[train].append(self.active_batch)
 
     def setBatchStat(self, key, value):
-        if self.activeBatch is None:
+        if self.active_batch is None:
             return
 
-        self.activeBatch[key] = value
+        self.active_batch[key] = value
                 
         self.plot(key, value, self.train)
+
+    def endBatch(self):
+        if self.active_batch is None:
+            return
+
+        self.active_batch["end_time"] = time.time()
+        
 
     def getX(self, epoch, batch_idx, train):
         if train:
