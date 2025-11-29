@@ -21,6 +21,7 @@ class Timer:
 
     def sum(self):
         """Return the sum of time."""
+        return sum(self.times)
 
     def cumsum(self):
         """Return the accumulated time."""

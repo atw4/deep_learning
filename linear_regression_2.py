@@ -1,105 +1,29 @@
-#from LinearRegressionScratch import LinearRegressionScratch
-#from SyntheticRegressionData import SyntheticRegressionData
-#from DataSample import DataSample
-#import torch
-#from WeightDecayScratch import WeightDecayScratch
-#from WeightDecay import WeightDecay
-#
-#import numpy as np
-#
-#import ProgressBoard
-#from TimeMachine import TimeMachine
-#
-#from Vocab import Vocab
-#
-#from FashionMNIST import FashionMNIST
-#import time
-#
-#from Utility import softmax
-#
-#from SoftmaxRegressionScratch import SoftmaxRegressionScratch
-#from SoftmaxRegression import SoftmaxRegression
-#
-#from MLPScratch import MLPScratch
-#from MLP import MLP
-#
-#from DropoutMPLScratch import DropoutMLPScratch
-#from DropoutMLP import DropoutMLP
-#from torch import nn
-#from KaggleHouse import KaggleHouse
-#from KaggleHouseNueralNetwork import KaggleHouseNueralNetwork
-#
-#from Utility import corr2d
-##from Utility import comp_conv2d
-#from Utility import corr2d_multi_in
-#from Utility import corr2d_multi_in_out
-#from Utility import corr2d_multi_in_out_1x1
-#from Utility import pool2d
-#from Utility import init_cnn
-#
-#import itertools
-#
-#from LeNet import LeNet
-#from AlexNet import AlexNet
-#from VGG import VGG
-#
-#from NiN import NiN
-#from GoogleNet import GoogleNet
-#import Utility
-#from BNLeNetScratch import BNLeNetScratch
-#from BNLeNet import BNLeNet
-#from Residual import Residual
-#from ResNet18 import ResNet18
-#from DenseNet import DenseNet
-#from Data import Data
-#
-#from DenseBlock import DenseBlock
-#from RNNScratch import RNNScratch
-#from RNNLMScratch import RNNLMScratch
-#from LSTMScratch import LSTMScratch
-#from GRUScratch import GRUScratch
-#from RNN import RNN
-#from RNNLM import RNNLM
-#from GRU import GRU
-#from BiRNNScratch import BiRNNScratch
-#from BiGRU import BiGRU
-#
-#from StackedRNNScratch import StackedRNNScratch
-#from Seq2SeqEncoder import Seq2SeqEncoder
-#from Seq2SeqDecoder import Seq2SeqDecoder
-#from Seq2Seq import Seq2Seq
-#
-#from MTRusEng import MTRusEng
-#from MTFraEng import MTFraEng
-#from DotProductAttention import DotProductAttention
-#from AdditiveAttention import AdditiveAttention
-#from Seq2SeqAttentionDecoder import Seq2SeqAttentionDecoder
-#from MultiHeadAttention import MultiHeadAttention
-#from PositionalEncoding import PositionalEncoding
-#from PositionWiseFFN import PositionWiseFFN
-#from AddNorm import AddNorm
-#from TransformerEncoderBlock import TransformerEncoderBlock
-#from TransformerEncoder import TransformerEncoder
-#from TransformerDecoderBlock import TransformerDecoderBlock
-#from TransformerDecoder import TransformerDecoder
-#from PatchEmbedding import PatchEmbedding
-#from ViTBlock import ViTBlock
-#from ViT import ViT
-#import math
-from Timer import Timer
+from Utility.Timer import Timer
 from DataModules.CH11DataModule import CH11DataModule
 from Models.LinearRegression import LinearRegression
 from Trainer.Trainer import Trainer
+from DataModules.SyntheticRegressionData import SyntheticRegressionData
+import torch
 
 import matplotlib.pyplot as plt
-num_inputs = 10
-data = CH11DataModule(num_inputs, 1)
 
-model = LinearRegression(lr = 1.0)
 
+batch_size = 1500
+num_epochs = 10
+
+ch11 = CH11DataModule(batch_size = batch_size, num_train = 1500)
+synth = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.2)
+
+
+
+
+model = LinearRegression(lr =1.0)
+model.plot_train_per_epoch = 1
+model.plot_valid_per_epoch = 1
+#
 trainer = Trainer(max_epochs=10, num_gpus=1)
-trainer.fit(model, data)
-
+trainer.fit(model, ch11)
+#
 plt.show()
 
 #timer = Timer()
