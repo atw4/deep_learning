@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import torch
-import Utility
+
+from Utility.Timer import Timer
+import Utility.Utility as Utility
+from Trainer.TrainerStatistics import TrainerStatistics
 
 class Trainer:
     def __init__(self, max_epochs, num_gpus=0, gradient_clip_val=0):
@@ -9,12 +12,11 @@ class Trainer:
         self.gradient_clip_val = gradient_clip_val
 
         self.gpus = [Utility.gpu(i) for i in range(min(num_gpus, Utility.num_gpus()))]
+        self.trainer_statistics = TrainerStatistics()
 
     def prepare_data(self, data):
         self.train_dataloader = data.train_dataloader()
         self.val_dataloader = data.val_dataloader()
-        self.num_train_batches = len(self.train_dataloader)
-        self.num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
 
     def prepare_model(self, model):
         model.trainer = self
@@ -27,11 +29,14 @@ class Trainer:
         self.prepare_data(data)
         self.prepare_model(model)
         self.optim = model.configure_optimizers()
-        self.epoch = 0;
-        self.train_batch_idx = 0
-        self.val_batch_idx = 0
-        for self.epoch in range(self.max_epochs):
+
+        for _ in range(self.max_epochs):
+            num_train_batches = len(self.train_dataloader)
+            num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
+
+            self.trainer_statistics.startEpoch(num_train_batches, num_val_batches)
             self.fit_epoch()
+            self.trainer_statistics.stopEpoch()
 
     def prepare_batch(self, batch):
         batch = [a.to(self.device()) for a in batch]
@@ -41,22 +46,27 @@ class Trainer:
     def fit_epoch(self):
         self.model.train()
         for batch in self.train_dataloader:
+            self.trainer_statistics.startBatch(True)
+
             loss = self.model.training_step(self.prepare_batch(batch))
+            self.trainer_statistics.setBatchStat("loss", loss)
+             
             self.optim.zero_grad()
             with torch.no_grad():
                 loss.backward()
                 if self.gradient_clip_val > 0:
                     self.clip_gradients(self.gradient_clip_val, self.model)
                 self.optim.step()
-            self.train_batch_idx +=1
 
         if self.val_dataloader is None:
             return
         self.model.eval()
         for batch in self.val_dataloader:
+            self.trainer_statistics.startBatch(False)
+
             with torch.no_grad():
-                self.model.validation_step(self.prepare_batch(batch))
-            self.val_batch_idx += 1
+                loss = self.model.validation_step(self.prepare_batch(batch))
+                self.trainer_statistics.setBatchStat("loss", loss)
 
     def clip_gradients(self, grad_clip_val, model):
         params = [p for p in model.parameters() if p.requires_grad]
