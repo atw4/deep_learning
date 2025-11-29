@@ -5,7 +5,7 @@ from ProgressBoard import ProgressBoard
 import torch
 
 class TrainerStatistics:
-    def __init__(self, capture_train_per_epoch=2, capture_valid_per_epoch=1):
+    def __init__(self, capture_train_per_epoch=1, capture_valid_per_epoch=1):
         self.epochs = [] 
          
         # Batches train/val
@@ -70,9 +70,9 @@ class TrainerStatistics:
 
     def getX(self, epoch, batch_idx, train):
         if train:
-            x = (epoch + 1) + batch_idx/self.num_batches[train]
+            x = (epoch - 1) + batch_idx/self.num_batches[train]
         else:
-            x = (epoch + 1)
+            x = epoch
 
         return x
             
