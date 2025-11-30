@@ -61,10 +61,28 @@ class TrainerStatistics:
             self.active_epoch["rel_start_time"] = last_epoch["rel_start_time"] + (self.active_epoch["start_time"] - last_epoch["start_time"])
             self.active_epoch["epoch_idx"] = last_epoch["epoch_idx"] + 1
 
+        self.active_epoch["epoch_x"] = self.active_epoch["epoch_idx"] + 1
+
     def endEpoch(self):
         self.active_epoch["end_time"] = time.time()
         self.active_epoch["rel_end_time"] = self.active_epoch["rel_start_time"] + (self.active_epoch["end_time"] - self.active_epoch["start_time"])
         self.active_epoch["duration"] = self.active_epoch["end_time"] - self.active_epoch["start_time"]
+
+
+
+        #Calculate the active epoch loss
+        self.active_epoch["loss"] = 0
+        
+        
+        epoch_batches = [b for b in self.batches[True] if b["epoch_idx"] == self.active_epoch["epoch_idx"]]
+        for batch in epoch_batches:
+            if "loss" not in batch:
+                pass
+
+            self.active_epoch["loss"] += batch["loss"]
+
+        self.active_epoch["loss"] = self.active_epoch["loss"]/len(epoch_batches)
+
 
         self.active_epoch = None
 
@@ -84,7 +102,7 @@ class TrainerStatistics:
             return
 
         self.active_batch = {"epoch_idx" : self.active_epoch["epoch_idx"], "batch_idx" : batch_idx}
-        self.active_batch["x"] = self.getX(len(self.epochs), self.active_batch["batch_idx"], train)
+        self.active_batch["epoch_x"] = self.getX(len(self.epochs), self.active_batch["batch_idx"], train)
         self.active_batch["start_time"] = time.time()
         self.active_batch["rel_start_time"] = self.active_epoch["rel_start_time"] + (self.active_batch["start_time"] - self.active_epoch["start_time"])
 
@@ -114,10 +132,8 @@ class TrainerStatistics:
 
         return x
 
-    def plot(self, key, value, train):
+    def plot(self, x, y, label):
         """Plot a point in animation."""
         self.board.xlabel = 'epoch'
 
-        x = self.batches[train][-1]["x"]
-
-        self.board.draw(x, value.to(torch.device('cpu')).detach().numpy(), ('train_' if train else 'val_') + key)
+        self.board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label)
