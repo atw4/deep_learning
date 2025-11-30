@@ -51,7 +51,7 @@ class Trainer:
             self.stats.startBatch(True, train_batch_idx)
 
             loss = self.model.training_step(self.prepare_batch(batch))
-            self.stats.setBatchStat("loss", loss)
+            self.stats.setBatchStat("loss", loss.clone().detach())
              
             self.optim.zero_grad()
             with torch.no_grad():

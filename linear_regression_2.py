@@ -5,12 +5,12 @@ from Models.LinearRegression import LinearRegression
 from Trainer.Trainer import Trainer
 from DataModules.SyntheticRegressionData import SyntheticRegressionData
 import torch
-import ProgressBoard
+from ProgressBoard import ProgressBoard
 
 import matplotlib.pyplot as plt
 
 
-gd_params = {"batch_size" : 1500, "num_epochs":10, "lr" : 1.0}
+gd_params = {"batch_size" : 1500, "num_epochs":10, "lr" : }
 sgd_params = {"batch_size" : 1, "num_epochs": 2, "lr" : 0.005}
 mini1_params = {"batch_size" : 100, "num_epochs" : 2, "lr" : 0.4}
 mini2_params = {"batch_size" : 10, "num_epochs" : 2, "lr" : 0.05}
@@ -38,9 +38,9 @@ training_params = [
 
 training_params = [training_params[0]]
 
-ProgressBoard.set_figsize([6, 3])
+board = ProgressBoard()
+board.xlabel = 'time '
 for training_param in training_params:
-    print(training_param["name"])
     batch_size = training_param["params"]["batch_size"]
     lr = training_param["params"]["lr"]
     num_epochs = training_param["params"]["num_epochs"]
@@ -52,18 +52,13 @@ for training_param in training_params:
 
 
     model = LinearRegression(lr = lr)
-    trainer = Trainer(max_epochs=10, num_gpus=1)
+    trainer = Trainer(max_epochs=num_epochs, num_gpus=1)
     trainer.fit(model, ch11)
 
-    stats = trainer.get_stat("epoch", "rel_start_time", "loss")
-    X = [stat[0] for stat in stats]
-    Y = [stat[1] for stat in stats]
-    print(X)
-    print(Y)
-    ProgressBoard.plot(X, Y, 'time (sec)', 'loss', legend=training_param["name"])
+    stats = trainer.get_stat("epoch", "epoch_x", "loss")
+    for (x, y) in stats:
+        board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label=training_param["name"])
 
-    #print(trainer.trainer_statistics.epochs)
-    #print(trainer.trainer_statistics.train_batches)
 
 
 #plt.gca().set_xscale('log')

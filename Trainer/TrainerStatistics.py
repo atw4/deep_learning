@@ -67,7 +67,7 @@ class TrainerStatistics:
 
             self.active_epoch["loss"] += batch["loss"]
 
-        self.active_epoch["loss"] = self.active_epoch["loss"]/len(epoch_batches)
+        self.active_epoch["loss"] = self.active_epoch["loss"].mean()
 
         self.active_epoch = None
 
