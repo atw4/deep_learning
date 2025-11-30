@@ -12,7 +12,6 @@ class Trainer:
         self.gradient_clip_val = gradient_clip_val
 
         self.gpus = [Utility.gpu(i) for i in range(min(num_gpus, Utility.num_gpus()))]
-        self.stats = TrainerStatistics()
 
     def prepare_data(self, data):
         self.train_dataloader = data.train_dataloader()
@@ -32,7 +31,7 @@ class Trainer:
 
         num_train_batches = len(self.train_dataloader)
         num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
-        self.stats.setNumBatches(num_train_batches, num_val_batches)
+        self.stats = TrainerStatistics(num_train_batches, num_val_batches)
         
         for _ in range(self.max_epochs):
 
@@ -89,3 +88,6 @@ class Trainer:
             return self.gpus[0]
 
         return Utility.cpu()
+
+    def get_stat(self, statType, x_key, y_key):
+        return self.stats.get_stat(statType, x_key, y_key)

@@ -1,30 +1,78 @@
 from Utility.Timer import Timer
+import Utility.Utility as Utility
 from DataModules.CH11DataModule import CH11DataModule
 from Models.LinearRegression import LinearRegression
 from Trainer.Trainer import Trainer
 from DataModules.SyntheticRegressionData import SyntheticRegressionData
 import torch
+import ProgressBoard
 
 import matplotlib.pyplot as plt
 
 
-batch_size = 1500
-num_epochs = 10
-
-ch11 = CH11DataModule(batch_size = batch_size, num_train = 1500)
-synth = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.2)
-
+gd_params = {"batch_size" : 1500, "num_epochs":10, "lr" : 1.0}
+sgd_params = {"batch_size" : 1, "num_epochs": 2, "lr" : 0.005}
+mini1_params = {"batch_size" : 100, "num_epochs" : 2, "lr" : 0.4}
+mini2_params = {"batch_size" : 10, "num_epochs" : 2, "lr" : 0.05}
 
 
+training_params = [
+    {
+        "name" : "gd",
+        "params" : gd_params
+    },
+    {
+        "name" : "sgd",
+        "params" : sgd_params
+    },
+    {
+        "name" : "mini1",
+        "params" : mini1_params
+    },
+    {
+        "name" : "mini2",
+        "params" : mini2_params
+    }
+]
 
-model = LinearRegression(lr =1.0)
-model.plot_train_per_epoch = 1
-model.plot_valid_per_epoch = 1
-#
-trainer = Trainer(max_epochs=10, num_gpus=1)
-trainer.fit(model, ch11)
+
+training_params = [training_params[0]]
+
+ProgressBoard.set_figsize([6, 3])
+for training_param in training_params:
+    print(training_param["name"])
+    batch_size = training_param["params"]["batch_size"]
+    lr = training_param["params"]["lr"]
+    num_epochs = training_param["params"]["num_epochs"]
+    
+    ch11 = CH11DataModule(batch_size = batch_size, num_train = 1500)
+
+
+
+
+
+    model = LinearRegression(lr = lr)
+    trainer = Trainer(max_epochs=10, num_gpus=1)
+    trainer.fit(model, ch11)
+
+    stats = trainer.get_stat("epoch", "rel_start_time", "loss")
+    X = [stat[0] for stat in stats]
+    Y = [stat[1] for stat in stats]
+    print(X)
+    print(Y)
+    ProgressBoard.plot(X, Y, 'time (sec)', 'loss', legend=training_param["name"])
+
+    #print(trainer.trainer_statistics.epochs)
+    #print(trainer.trainer_statistics.train_batches)
+
+
+#plt.gca().set_xscale('log')
 #
 plt.show()
+
+#ProgressBoard.plot(*list(map(list, zip(gd_res, sgd_res, mini1_res, mini2_res))),
+         #'time (sec)', 'loss', xlim=[1e-2, 10],
+         #legend=['gd', 'sgd', 'batch size=100', 'batch_size=10'])
 
 #timer = Timer()
 #

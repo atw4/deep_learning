@@ -4,9 +4,12 @@ from Utility.Timer import Timer
 from ProgressBoard import ProgressBoard
 import torch
 import time
+import math
 
 class TrainerStatistics:
-    def __init__(self, capture_train_per_epoch=3, capture_valid_per_epoch=1):
+    def __init__(self, num_train_batches, num_val_batches, capture_train_per_epoch=3, capture_valid_per_epoch=1):
+        self.num_train_batches = num_train_batches
+        self.num_val_batches = num_val_batches
         self.epochs = [] 
          
         # Batches train/val
@@ -26,25 +29,8 @@ class TrainerStatistics:
             False : capture_valid_per_epoch
         }
 
-        self.num_batches = {
-            True : 0,
-            False : 0
-        }
-
         self.active_batch = None
         self.active_epoch = None
-
-    def evaluate_loss(net, data_iter, loss):
-        """Evaluate the loss of a model on the given dataset.
-
-        Defined in :numref:`sec_utils`"""
-        metric = d2l.Accumulator(2)  # Sum of losses, no. of examples
-        for X, y in data_iter:
-            out = net(X)
-            y = d2l.reshape(y, out.shape)
-            l = loss(out, y)
-            metric.add(d2l.reduce_sum(l), d2l.size(l))
-        return metric[0] / metric[1]
 
     def startEpoch(self):
         self.active_epoch = {}
@@ -83,20 +69,18 @@ class TrainerStatistics:
 
         self.active_epoch["loss"] = self.active_epoch["loss"]/len(epoch_batches)
 
-
         self.active_epoch = None
 
 
             
-    def setNumBatches(self, num_train_batches, num_val_batches):
-        self.num_batches[True] = num_train_batches
-        self.num_batches[False] = num_val_batches
-
     def startBatch(self, train, batch_idx):
         self.train = train
 
         #Should we capture this batch
-        cap = self.num_batches[train] // self.capture_per_epoch[train]
+        num = self.num_train_batches if train else self.num_val_batches
+
+        cap = math.ceil(num / self.capture_per_epoch[train])
+
         if batch_idx % cap != 0:
             self.active_batch = None
             return
@@ -126,7 +110,7 @@ class TrainerStatistics:
 
     def getX(self, epoch, batch_idx, train):
         if train:
-            x = (epoch - 1) + batch_idx/self.num_batches[train]
+            x = (epoch - 1) + batch_idx/self.num_train_batches
         else:
             x = epoch
 
@@ -137,3 +121,14 @@ class TrainerStatistics:
         self.board.xlabel = 'epoch'
 
         self.board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label)
+
+    def get_stat(self, statType, x_key, y_key):
+        ret = []
+
+        ret = []
+        if statType == "epoch":
+            ret = [(e[x_key], e[y_key]) for e in self.epochs if x_key in e and y_key in e]
+
+        return ret
+                
+            
