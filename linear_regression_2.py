@@ -10,7 +10,7 @@ from ProgressBoard import ProgressBoard
 import matplotlib.pyplot as plt
 
 
-gd_params = {"batch_size" : 1500, "num_epochs":10, "lr" : }
+gd_params = {"batch_size" : 1500, "num_epochs":10, "lr" : 0.1 }
 sgd_params = {"batch_size" : 1, "num_epochs": 2, "lr" : 0.005}
 mini1_params = {"batch_size" : 100, "num_epochs" : 2, "lr" : 0.4}
 mini2_params = {"batch_size" : 10, "num_epochs" : 2, "lr" : 0.05}
@@ -26,19 +26,20 @@ training_params = [
         "params" : sgd_params
     },
     {
-        "name" : "mini1",
+        "name" : "batch size 100",
         "params" : mini1_params
     },
     {
-        "name" : "mini2",
+        "name" : "batch size 10",
         "params" : mini2_params
     }
 ]
 
 
-training_params = [training_params[0]]
+#training_params = [training_params[0]]
 
 board = ProgressBoard()
+plt.gca().set_xscale('log')
 board.xlabel = 'time '
 for training_param in training_params:
     batch_size = training_param["params"]["batch_size"]
@@ -55,7 +56,7 @@ for training_param in training_params:
     trainer = Trainer(max_epochs=num_epochs, num_gpus=1)
     trainer.fit(model, ch11)
 
-    stats = trainer.get_stat("epoch", "epoch_x", "loss")
+    stats = trainer.get_stat("train_batch", "rel_start_time", "loss")
     for (x, y) in stats:
         board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label=training_param["name"])
 

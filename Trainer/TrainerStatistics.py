@@ -128,6 +128,8 @@ class TrainerStatistics:
         ret = []
         if statType == "epoch":
             ret = [(e[x_key], e[y_key]) for e in self.epochs if x_key in e and y_key in e]
+        elif statType == "train_batch":
+            ret = [(e[x_key], e[y_key]) for e in self.batches[True] if x_key in e and y_key in e]
 
         return ret
                 

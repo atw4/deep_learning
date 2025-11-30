@@ -34,6 +34,8 @@ class ProgressBoard():
         self.figsize = figsize
         self.display = display
 
+        #plt.ticklabel_format(style='plain', useOffset=False)
+
     def draw(self, x, y, label, every_n=1):
         """Defined in :numref:`sec_utils`"""
         Point = collections.namedtuple('Point', ['x', 'y'])
