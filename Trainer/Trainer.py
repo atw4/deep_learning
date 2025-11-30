@@ -47,11 +47,13 @@ class Trainer:
     def fit_epoch(self):
         self.model.train()
 
+        epoch_loss = 0
         for train_batch_idx, batch in enumerate(self.train_dataloader):
             self.stats.startBatch(True, train_batch_idx)
 
             loss = self.model.training_step(self.prepare_batch(batch))
-            self.stats.setBatchStat("loss", loss.clone().detach())
+            epoch_loss+= loss.detach()
+            self.stats.setBatchStat("loss", loss.detach())
              
             self.optim.zero_grad()
             with torch.no_grad():
@@ -61,6 +63,7 @@ class Trainer:
                 self.optim.step()
 
             self.stats.endBatch()
+        self.stats.setEpochStat("loss", epoch_loss.mean())
 
 
         if self.val_dataloader is None:
