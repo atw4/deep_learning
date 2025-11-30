@@ -54,23 +54,14 @@ class TrainerStatistics:
         self.active_epoch["rel_end_time"] = self.active_epoch["rel_start_time"] + (self.active_epoch["end_time"] - self.active_epoch["start_time"])
         self.active_epoch["duration"] = self.active_epoch["end_time"] - self.active_epoch["start_time"]
 
-
-
-        #Calculate the active epoch loss
-        self.active_epoch["loss"] = 0
-        
-        
-        epoch_batches = [b for b in self.batches[True] if b["epoch_idx"] == self.active_epoch["epoch_idx"]]
-        for batch in epoch_batches:
-            if "loss" not in batch:
-                pass
-
-            self.active_epoch["loss"] += batch["loss"]
-
-        self.active_epoch["loss"] = self.active_epoch["loss"].mean()
-
         self.active_epoch = None
 
+    def setEpochStat(self, key, value):
+        if self.active_epoch is None:
+            return
+
+        self.active_epoch[key] = value
+        
 
             
     def startBatch(self, train, batch_idx):
