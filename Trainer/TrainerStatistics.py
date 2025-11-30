@@ -6,7 +6,7 @@ import torch
 import time
 
 class TrainerStatistics:
-    def __init__(self, capture_train_per_epoch=1, capture_valid_per_epoch=1):
+    def __init__(self, capture_train_per_epoch=3, capture_valid_per_epoch=1):
         self.epochs = [] 
          
         # Batches train/val
@@ -83,7 +83,7 @@ class TrainerStatistics:
             self.active_batch = None
             return
 
-        self.active_batch = {"epoch" : len(self.epochs), "batch_idx" : batch_idx}
+        self.active_batch = {"epoch_idx" : self.active_epoch["epoch_idx"], "batch_idx" : batch_idx}
         self.active_batch["x"] = self.getX(len(self.epochs), self.active_batch["batch_idx"], train)
         self.active_batch["start_time"] = time.time()
         self.active_batch["rel_start_time"] = self.active_epoch["rel_start_time"] + (self.active_batch["start_time"] - self.active_epoch["start_time"])
@@ -114,9 +114,6 @@ class TrainerStatistics:
 
         return x
 
-    def getStat():
-        self.epoc
-            
     def plot(self, key, value, train):
         """Plot a point in animation."""
         self.board.xlabel = 'epoch'
