@@ -12,7 +12,7 @@ class Trainer:
         self.gradient_clip_val = gradient_clip_val
 
         self.gpus = [Utility.gpu(i) for i in range(min(num_gpus, Utility.num_gpus()))]
-        self.trainer_statistics = TrainerStatistics()
+        self.stats = TrainerStatistics()
 
     def prepare_data(self, data):
         self.train_dataloader = data.train_dataloader()
@@ -32,13 +32,13 @@ class Trainer:
 
         num_train_batches = len(self.train_dataloader)
         num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
-        self.trainer_statistics.setNumBatches(num_train_batches, num_val_batches)
+        self.stats.setNumBatches(num_train_batches, num_val_batches)
         
         for _ in range(self.max_epochs):
 
-            self.trainer_statistics.startEpoch()
+            self.stats.startEpoch()
             self.fit_epoch()
-            self.trainer_statistics.stopEpoch()
+            self.stats.stopEpoch()
 
     def prepare_batch(self, batch):
         batch = [a.to(self.device()) for a in batch]
@@ -49,10 +49,10 @@ class Trainer:
         self.model.train()
 
         for train_batch_idx, batch in enumerate(self.train_dataloader):
-            self.trainer_statistics.startBatch(True, train_batch_idx)
+            self.stats.startBatch(True, train_batch_idx)
 
             loss = self.model.training_step(self.prepare_batch(batch))
-            self.trainer_statistics.setBatchStat("loss", loss)
+            self.stats.setBatchStat("loss", loss)
              
             self.optim.zero_grad()
             with torch.no_grad():
@@ -61,7 +61,7 @@ class Trainer:
                     self.clip_gradients(self.gradient_clip_val, self.model)
                 self.optim.step()
 
-            self.trainer_statistics.endBatch()
+            self.stats.endBatch()
 
 
         if self.val_dataloader is None:
@@ -69,14 +69,13 @@ class Trainer:
         self.model.eval()
 
         for val_batch_idx, batch in enumerate(self.val_dataloader):
-            self.trainer_statistics.startBatch(False, val_batch_idx)
+            self.stats.startBatch(False, val_batch_idx)
 
             with torch.no_grad():
                 loss = self.model.validation_step(self.prepare_batch(batch))
-                self.trainer_statistics.setBatchStat("loss", loss)
+                self.stats.setBatchStat("loss", loss)
 
-
-            self.trainer_statistics.endBatch()
+            self.stats.endBatch()
 
     def clip_gradients(self, grad_clip_val, model):
         params = [p for p in model.parameters() if p.requires_grad]

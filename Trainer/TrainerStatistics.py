@@ -34,6 +34,18 @@ class TrainerStatistics:
         self.active_batch = None
         self.active_epoch = None
 
+    def evaluate_loss(net, data_iter, loss):
+        """Evaluate the loss of a model on the given dataset.
+
+        Defined in :numref:`sec_utils`"""
+        metric = d2l.Accumulator(2)  # Sum of losses, no. of examples
+        for X, y in data_iter:
+            out = net(X)
+            y = d2l.reshape(y, out.shape)
+            l = loss(out, y)
+            metric.add(d2l.reduce_sum(l), d2l.size(l))
+        return metric[0] / metric[1]
+
     def startEpoch(self):
         self.active_epoch = {}
         self.epochs.append(self.active_epoch)
@@ -49,10 +61,13 @@ class TrainerStatistics:
             self.active_epoch["rel_start_time"] = last_epoch["rel_start_time"] + (self.active_epoch["start_time"] - last_epoch["start_time"])
             self.active_epoch["epoch_idx"] = last_epoch["epoch_idx"] + 1
 
-    def stopEpoch(self):
+    def endEpoch(self):
         self.active_epoch["end_time"] = time.time()
         self.active_epoch["rel_end_time"] = self.active_epoch["rel_start_time"] + (self.active_epoch["end_time"] - self.active_epoch["start_time"])
+        self.active_epoch["duration"] = self.active_epoch["end_time"] - self.active_epoch["start_time"]
+
         self.active_epoch = None
+
 
             
     def setNumBatches(self, num_train_batches, num_val_batches):
@@ -80,8 +95,9 @@ class TrainerStatistics:
             return
 
         self.active_batch[key] = value
-                
-        self.plot(key, value, self.train)
+            
+
+
 
     def endBatch(self):
         if self.active_batch is None:
@@ -97,6 +113,9 @@ class TrainerStatistics:
             x = epoch
 
         return x
+
+    def getStat():
+        self.epoc
             
     def plot(self, key, value, train):
         """Plot a point in animation."""
