@@ -38,7 +38,7 @@ class Trainer:
 
             self.stats.startEpoch()
             self.fit_epoch()
-            self.stats.stopEpoch()
+            self.stats.endEpoch()
 
     def prepare_batch(self, batch):
         batch = [a.to(self.device()) for a in batch]
