@@ -3,7 +3,7 @@
 import torch
 from torch import nn
 from Models.Module import Module
-from SGD import SGD
+
 
 class LinearRegression(Module):
     def __init__(self, lr):

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 import torch
 from torch import nn
-from Module import Module
-from SGD import SGD
+from Models.Module import Module
+from Models.Scratch.SGD import SGD
 import math
 
 class LinearRegressionScratch(Module):
-    def __init__(self, num_inputs, lr, sigma=0.01):
+    def __init__(self, num_inputs, lr, sigma=0.01, momentum = 0.0):
         super().__init__()
 
         self.num_inputs = num_inputs
         self.lr = lr
         self.sigma = sigma
+        self.momentum = momentum
 
         self.w = torch.normal(0, sigma, (num_inputs, 1), requires_grad=True)
         self.b = torch.zeros(1, requires_grad=True)
