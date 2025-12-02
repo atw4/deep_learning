@@ -2,69 +2,159 @@ from Utility.Timer import Timer
 import Utility.Utility as Utility
 from DataModules.CH11DataModule import CH11DataModule
 from Models.LinearRegression import LinearRegression
+from Models.Scratch.LinearRegressionScratch import LinearRegressionScratch
+from Models.Scratch.AdagradLinearRegressionScratch import AdagradLinearRegressionScratch
 from Trainer.Trainer import Trainer
 from DataModules.SyntheticRegressionData import SyntheticRegressionData
 import torch
-from ProgressBoard import ProgressBoard
 
+from ProgressBoard import ProgressBoard
+#import ProgressBoard
 import matplotlib.pyplot as plt
 
-
-gd_params = {"batch_size" : 1500, "num_epochs":10, "lr" : 0.1 }
-sgd_params = {"batch_size" : 1, "num_epochs": 2, "lr" : 0.005}
-mini1_params = {"batch_size" : 100, "num_epochs" : 2, "lr" : 0.4}
-mini2_params = {"batch_size" : 10, "num_epochs" : 2, "lr" : 0.05}
-
-
-training_params = [
-    {
-        "name" : "gd",
-        "params" : gd_params
-    },
-    {
-        "name" : "sgd",
-        "params" : sgd_params
-    },
-    {
-        "name" : "batch size 100",
-        "params" : mini1_params
-    },
-    {
-        "name" : "batch size 10",
-        "params" : mini2_params
-    }
-]
-
-
-#training_params = [training_params[0]]
-
 board = ProgressBoard()
-plt.gca().set_xscale('log')
-board.xlabel = 'time '
-for training_param in training_params:
-    batch_size = training_param["params"]["batch_size"]
-    lr = training_param["params"]["lr"]
-    num_epochs = training_param["params"]["num_epochs"]
-    
-    ch11 = CH11DataModule(batch_size = batch_size, num_train = 1500)
+board.xlabel='epoch'
 
+models = [AdagradLinearRegressionScratch(num_inputs=5, lr = 0.02)
+          ,LinearRegression(lr = 0.02, momentum=0.5)]
 
-
-
-
-    model = LinearRegression(lr = lr)
-    trainer = Trainer(max_epochs=num_epochs, num_gpus=1)
+for model,model_name in zip(models, ["adagrad", "linear"]):
+    trainer = Trainer(max_epochs=10, num_gpus=1)
+    ch11 = CH11DataModule(batch_size = 10)
     trainer.fit(model, ch11)
-
-    stats = trainer.get_stat("train_batch", "rel_start_time", "loss")
+    stats = trainer.get_stat("epoch", "epoch_x", "loss")
     for (x, y) in stats:
-        board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label=training_param["name"])
+        board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label=model_name)
 
 
-
-#plt.gca().set_xscale('log')
-#
 plt.show()
+
+#board = ProgressBoard()
+#board.xlabel='epoch'
+#tests = [{"lr":0.02, "momentum" : 0.5},
+    #{"lr":0.01, "momentum": 0.9},
+    #{"lr":0.005, "momentum": 0.9}]
+#
+#for test in tests:
+    #ch11 = CH11DataModule(batch_size = 10)
+#
+    #model = LinearRegressionScratch(num_inputs=5, lr = test["lr"], momentum=test["momentum"])
+    ##model = LinearRegression(lr = 0.02, momentum=0.5)
+    #trainer = Trainer(max_epochs=10, num_gpus=1)
+    #trainer.fit(model, ch11)
+    #stats = trainer.get_stat("epoch", "epoch_x", "loss")
+    #for (x, y) in stats:
+        #board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label=f'lr:{test["lr"]}, momentum:{test["momentum"]}')
+#
+    #epoch_loss = trainer.get_stat("epoch", "epoch_x", "duration")
+    #print(epoch_loss)
+#plt.show()
+
+#ProgressBoard.plot(*list(map(list, zip(gd_res, sgd_res, mini1_res, mini2_res))),
+         #'time (sec)', 'loss', xlim=[1e-2, 10],
+         #legend=['gd', 'sgd', 'batch size=100', 'batch_size=10'])
+         #
+         #
+#board = ProgressBoard()
+#board.xlabel='epoch'
+#data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
+#model = LinearRegressionScratch(lr=0.01, num_inputs=2)
+#trainer = Trainer(max_epochs=5)
+#trainer.fit(model, data)
+#stats = trainer.get_stat("train_batch", "epoch_x", "loss")
+#for (x, y) in stats:
+    #board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label="asdf")
+#plt.show()
+
+
+#plt.show()
+
+#def f_2d(x1, x2):
+    #return 0.1 * x1 ** 2 + 2 * x2 ** 2
+#
+#eta = 0.4
+#def gd_2d(x1, x2, s1, s2):
+    #return (x1 - eta * 0.2 * x1, x2 - eta * 4 * x2, 0, 0)
+#
+#eta, beta = 0.6, 0.5
+#def momentum_2d(x1, x2, v1, v2):
+    #v1 = beta * v1 + 0.2 * x1
+    #v2 = beta * v2 + 4 * x2
+    #return x1 - eta * v1, x2 - eta * v2, v1, v2
+#
+#eta = 0.4
+#def adagard_2d(x1, x2, s1, s2):
+    #eps = 1e-6
+    #g1, g2 = 0.2*x1, 4*x2
+    #s1 += g1 ** 2
+    #g2 += g2 ** 2
+    #x1 -= eta / matrh.sqrt(s1)
+   # 
+#
+#ProgressBoard.show_trace_2d(f_2d, Utility.train_2d(momentum_2d))
+#plt.show()
+#
+#
+#betas = [0.95, 0.9, 0.6, 0]
+#for beta in betas:
+    #x = torch.arange(40).detach().numpy()
+    #plt.plot(x, beta ** x, label = f'beta ={beta:.2f}')
+    #plt.xlabel('time')
+    #plt.legend()
+#plt.show()
+    
+
+#plt.show()
+#gd_params = {"batch_size" : 1500, "num_epochs":10, "lr" : 0.1 }
+#sgd_params = {"batch_size" : 1, "num_epochs": 2, "lr" : 0.005}
+#mini1_params = {"batch_size" : 100, "num_epochs" : 2, "lr" : 0.4}
+#mini2_params = {"batch_size" : 10, "num_epochs" : 2, "lr" : 0.05}
+#
+#
+#training_params = [
+    #{
+        #"name" : "gd",
+        #"params" : gd_params
+    #},
+    #{
+        #"name" : "sgd",
+        #"params" : sgd_params
+    #},
+    #{
+        #"name" : "batch size 100",
+        #"params" : mini1_params
+    #},
+    #{
+        #"name" : "batch size 10",
+        #"params" : mini2_params
+    #}
+#]
+
+
+
+#board = ProgressBoard()
+#plt.gca().set_xscale('log')
+#board.xlabel = 'time '
+#for training_param in training_params:
+    #batch_size = training_param["params"]["batch_size"]
+    #lr = training_param["params"]["lr"]
+    #num_epochs = training_param["params"]["num_epochs"]
+   # 
+    #ch11 = CH11DataModule(batch_size = batch_size, num_train = 1500)
+#
+#
+#
+#
+#
+    #model = LinearRegression(lr = lr)
+    #trainer = Trainer(max_epochs=num_epochs, num_gpus=1)
+    #trainer.fit(model, ch11)
+#
+    #stats = trainer.get_stat("train_batch", "rel_start_time", "loss")
+    #for (x, y) in stats:
+        #board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label=training_param["name"])
+#
+#plt.show()
 
 #ProgressBoard.plot(*list(map(list, zip(gd_res, sgd_res, mini1_res, mini2_res))),
          #'time (sec)', 'loss', xlim=[1e-2, 10],
