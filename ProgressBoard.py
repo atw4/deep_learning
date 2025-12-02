@@ -180,3 +180,13 @@ def show_trace_2d(f, results):  #@save
     plt.contour(x1, x2, f(x1, x2), colors='#1f77b4')
     plt.xlabel('x1')
     plt.ylabel('x2')
+
+
+def show_trace(results, f):
+    n = max(abs(min(results)), abs(max(results)))
+    f_line = torch.arange(-n, n, 0.01)
+    set_figsize()
+    print(results)
+    plt.plot(f_line, [f(x) for x in f_line], '-')
+    plt.plot(results, [f(x) for x in results], '-o')
+

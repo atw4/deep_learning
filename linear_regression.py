@@ -1,97 +1,41 @@
-from LinearRegressionScratch import LinearRegressionScratch
-from SyntheticRegressionData import SyntheticRegressionData
-from LinearRegression import LinearRegression
-from Trainer import Trainer
-from DataSample import DataSample
+from Utility.Timer import Timer
+import Utility.Utility as Utility
+from DataModules.CH11DataModule import CH11DataModule
+from Models.LinearRegression import LinearRegression
+from Models.Scratch.LinearRegressionScratch import LinearRegressionScratch
+from Trainer.Trainer import Trainer
+from DataModules.SyntheticRegressionData import SyntheticRegressionData
 import torch
-from WeightDecayScratch import WeightDecayScratch
-from WeightDecay import WeightDecay
 
-import numpy as np
+#from ProgressBoard import ProgressBoard
+import ProgressBoard
 import matplotlib.pyplot as plt
 
-import ProgressBoard
-from TimeMachine import TimeMachine
 
-from Vocab import Vocab
+c = torch.tensor(0.5)
 
-from FashionMNIST import FashionMNIST
-import time
+def f(x):
+    return torch.cosh(c * x)
 
-from Utility import softmax
+def f_grad(x):
+    return c * torch.sinh(c * x)
 
-from SoftmaxRegressionScratch import SoftmaxRegressionScratch
-from SoftmaxRegression import SoftmaxRegression
+def f_hess(x):
+    return c**2 * torch.cosh(c * x)
 
-from MLPScratch import MLPScratch
-from MLP import MLP
-
-from DropoutMPLScratch import DropoutMLPScratch
-from DropoutMLP import DropoutMLP
-from torch import nn
-from KaggleHouse import KaggleHouse
-from KaggleHouseNueralNetwork import KaggleHouseNueralNetwork
-
-from Utility import corr2d
-#from Utility import comp_conv2d
-from Utility import corr2d_multi_in
-from Utility import corr2d_multi_in_out
-from Utility import corr2d_multi_in_out_1x1
-from Utility import pool2d
-from Utility import init_cnn
-
-import itertools
-
-from LeNet import LeNet
-from AlexNet import AlexNet
-from VGG import VGG
-
-from NiN import NiN
-from GoogleNet import GoogleNet
-import Utility
-from BNLeNetScratch import BNLeNetScratch
-from BNLeNet import BNLeNet
-from Residual import Residual
-from ResNet18 import ResNet18
-from DenseNet import DenseNet
-from Data import Data
-
-from DenseBlock import DenseBlock
-from RNNScratch import RNNScratch
-from RNNLMScratch import RNNLMScratch
-from LSTMScratch import LSTMScratch
-from GRUScratch import GRUScratch
-from RNN import RNN
-from RNNLM import RNNLM
-from GRU import GRU
-from BiRNNScratch import BiRNNScratch
-from BiGRU import BiGRU
-
-from StackedRNNScratch import StackedRNNScratch
-from Seq2SeqEncoder import Seq2SeqEncoder
-from Seq2SeqDecoder import Seq2SeqDecoder
-from Seq2Seq import Seq2Seq
-
-from MTRusEng import MTRusEng
-from MTFraEng import MTFraEng
-from DotProductAttention import DotProductAttention
-from AdditiveAttention import AdditiveAttention
-from Seq2SeqAttentionDecoder import Seq2SeqAttentionDecoder
-from MultiHeadAttention import MultiHeadAttention
-from PositionalEncoding import PositionalEncoding
-from PositionWiseFFN import PositionWiseFFN
-from AddNorm import AddNorm
-from TransformerEncoderBlock import TransformerEncoderBlock
-from TransformerEncoder import TransformerEncoder
-from TransformerDecoderBlock import TransformerDecoderBlock
-from TransformerDecoder import TransformerDecoder
-from PatchEmbedding import PatchEmbedding
-from ViTBlock import ViTBlock
-from ViT import ViT
-import math
-from Timer import Timer
-
-
+def newton(eta=1.0):
+    x = 10.0
+    results = [x]
+    for i in range(10):
+        x -= eta * f_grad(x) / f_hess(x)
+        results.append(float(x))
+    
+    return results
+ProgressBoard.show_trace(newton(), f)
+plt.show()
+#plt.show()
+#ProgressBoard.show_trace(newton(), f)
+    
 #timer = Timer()
 #
 ## comp

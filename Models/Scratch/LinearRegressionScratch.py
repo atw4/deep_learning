@@ -29,4 +29,4 @@ class LinearRegressionScratch(Module):
         return l.mean()
 
     def configure_optimizers(self):
-        return SGD([self.w, self.b], self.lr)
+        return SGD([self.w, self.b], self.lr, self.momentum)

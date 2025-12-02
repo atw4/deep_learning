@@ -6,10 +6,11 @@ from Models.Module import Module
 
 
 class LinearRegression(Module):
-    def __init__(self, lr):
+    def __init__(self, lr, momentum = 0.0):
         super().__init__()
 
         self.lr = lr
+        self.momentum = momentum
         self.net = nn.LazyLinear(1)
         self.net.weight.data.normal_(0, 0.01)
         self.net.bias.data.fill_(0)
@@ -19,4 +20,4 @@ class LinearRegression(Module):
         return fn(y_hat, y)
 
     def configure_optimizers(self):
-        return torch.optim.SGD(self.parameters(), self.lr)
+        return torch.optim.SGD(self.parameters(), self.lr, momentum=self.momentum)

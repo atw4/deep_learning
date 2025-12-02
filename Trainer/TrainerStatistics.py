@@ -7,7 +7,7 @@ import time
 import math
 
 class TrainerStatistics:
-    def __init__(self, num_train_batches, num_val_batches, capture_train_per_epoch=3, capture_valid_per_epoch=1):
+    def __init__(self, num_train_batches, num_val_batches, capture_train_per_epoch=5, capture_valid_per_epoch=1):
         self.num_train_batches = num_train_batches
         self.num_val_batches = num_val_batches
         self.epochs = [] 
