@@ -23,7 +23,8 @@ class AdagradLinearRegressionScratch(Module):
 
     ### Squared Loss
     def loss(self, y_hat, y):
-        l = ((y_hat - y) ** 2)/2
+        #l = ((y_hat - y) ** 2) / 2
+        l = ((y_hat - y) ** 2)  #Remove the factor of 2 so it matches the MseLoss implementation
         return l.mean()
 
     def configure_optimizers(self):

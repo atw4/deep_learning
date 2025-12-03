@@ -18,15 +18,17 @@ class Trainer:
         self.val_dataloader = data.val_dataloader()
 
     def prepare_model(self, model):
-        model.trainer = self
-
         model.to(self.device())
-
         self.model = model
 
     def fit(self, model, data):
         self.prepare_data(data)
         self.prepare_model(model)
+
+        # Initialize Lazy Parameters
+        lazy_batch = self.prepare_batch(next(iter(self.train_dataloader)))
+        self.model.training_step(lazy_batch)
+
         self.optim = model.configure_optimizers()
 
         num_train_batches = len(self.train_dataloader)
@@ -52,8 +54,9 @@ class Trainer:
             self.stats.startBatch(True, train_batch_idx)
 
             loss = self.model.training_step(self.prepare_batch(batch))
-            epoch_loss+= loss.detach()
-            self.stats.setBatchStat("loss", loss.detach())
+            scalar_loss = loss.item()
+            epoch_loss+= scalar_loss
+            self.stats.setBatchStat("loss", scalar_loss)
              
             self.optim.zero_grad()
             with torch.no_grad():
@@ -63,7 +66,8 @@ class Trainer:
                 self.optim.step()
 
             self.stats.endBatch()
-        self.stats.setEpochStat("loss", epoch_loss.mean())
+        avg_epoch_loss = epoch_loss / len(self.train_dataloader) if len(self.train_dataloader) > 0 else 0
+        self.stats.setEpochStat("loss", avg_epoch_loss)
 
 
         if self.val_dataloader is None:
