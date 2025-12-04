@@ -7,6 +7,7 @@ from Trainer.Trainer import Trainer
 from Models.Scratch.SGD import SGD
 from Models.Scratch.Adagrad import Adagrad
 from Models.Scratch.RMSProp import RMSProp
+from Models.Scratch.Adadelta import Adadelta
 import torch
 import math
 
@@ -26,13 +27,18 @@ adagrad_optim = lambda params: torch.optim.Adagrad(params, lr = 0.01)
 
 rms_prop_scratch_optim = lambda params: RMSProp(params, lr=0.01, gamma=0.9)
 rms_prop_optim = lambda params: torch.optim.RMSprop(params, lr=0.01, alpha=0.9)
+
+adadelta_scratch_optim = lambda params: Adadelta(params, rho=0.9)
+adadelta_optim = lambda params: torch.optim.Adadelta(params, rho=0.9)
 models = [
     #(LinearRegressionScratch(num_inputs=5, optimizer=sgd_scratch_optim), "linear_scratch"),
     #(LinearRegression(optimizer=sgd_optim), "linear"),
-    (LinearRegressionScratch(num_inputs=5, optimizer=adagrad_scratch_optim), "adagrad_scratch"),
-    (LinearRegression(optimizer=adagrad_optim), "adagrad"),
-    (LinearRegressionScratch(num_inputs=5, optimizer=rms_prop_scratch_optim), "rms_prop_scratch"),
-    (LinearRegression(optimizer=rms_prop_optim), "rms_prop")
+    #(LinearRegressionScratch(num_inputs=5, optimizer=adagrad_scratch_optim), "adagrad_scratch"),
+    #(LinearRegression(optimizer=adagrad_optim), "adagrad"),
+    #(LinearRegressionScratch(num_inputs=5, optimizer=rms_prop_scratch_optim), "rms_prop_scratch"),
+    #(LinearRegression(optimizer=rms_prop_optim), "rms_prop")
+    (LinearRegressionScratch(num_inputs=5, optimizer=adadelta_scratch_optim), "adadelta_scratch"),
+    (LinearRegression(optimizer=adadelta_optim), "adadelta")
 ]
 
 for model,model_name in models:
