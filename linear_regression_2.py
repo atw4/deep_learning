@@ -3,38 +3,39 @@ import Utility.Utility as Utility
 from DataModules.CH11DataModule import CH11DataModule
 from Models.LinearRegression import LinearRegression
 from Models.AdagradLinearRegression import AdagradLinearRegression
+from Models.RMSPropLinearRegression import RMSPropLinearRegression
 from Models.Scratch.LinearRegressionScratch import LinearRegressionScratch
 from Models.Scratch.AdagradLinearRegressionScratch import AdagradLinearRegressionScratch
+from Models.Scratch.RMSPropLinearRegressionScratch import RMSPropLinearRegressionScratch
 from Trainer.Trainer import Trainer
-from DataModules.SyntheticRegressionData import SyntheticRegressionData
 import torch
 import math
 
-#from ProgressBoard import ProgressBoard
-import ProgressBoard
+from ProgressBoard import ProgressBoard
+#import ProgressBoard
 import matplotlib.pyplot as plt
 
-#board = ProgressBoard()
-#board.xlabel='epoch'
-#
-#models = [
-#
-    #( AdagradLinearRegressionScratch(num_inputs=5, lr = 0.02), "adagrad_scratch"),
-    #( AdagradLinearRegression(lr = 0.02), "adagrad"),
-    #(LinearRegression(lr = 0.02), "linear"),
-    #(LinearRegressionScratch(num_inputs = 5, lr = 0.02), "linear_regression_scratch")
-#]
-#
-#for model,model_name in models:
-    #trainer = Trainer(max_epochs=10, num_gpus=1)
-    #ch11 = CH11DataModule(batch_size = 10)
-    #trainer.fit(model, ch11)
-    #stats = trainer.get_stat("epoch", "epoch_x", "loss")
-    #for (x, y) in stats:
-        #board.draw(x, y, label=model_name)
-#
-#
-#plt.show()
+
+board = ProgressBoard()
+board.xlabel='epoch'
+
+models = [
+    (RMSPropLinearRegressionScratch(num_inputs = 5, lr = 0.01, gamma = 1.0), "rms_prop_scratch"),
+    (RMSPropLinearRegression(lr = 0.01, gamma = 1.0), "rms_prop"),
+    (AdagradLinearRegression(lr = 0.01), "adagrad"),
+    (AdagradLinearRegressionScratch(num_inputs = 5, lr = 0.01), "adagrad_scratch"),
+]
+
+for model,model_name in models:
+    trainer = Trainer(max_epochs=10, num_gpus=1)
+    ch11 = CH11DataModule(batch_size = 10)
+    trainer.fit(model, ch11)
+    stats = trainer.get_stat("epoch", "epoch_x", "loss")
+    for (x, y) in stats:
+        board.draw(x, y, label=model_name)
+
+
+plt.show()
 
 #board = ProgressBoard()
 #board.xlabel='epoch'
@@ -76,41 +77,41 @@ import matplotlib.pyplot as plt
 
 #plt.show()
 
-def f_2d(x1, x2):
-    return 0.1 * x1 ** 2 + 2 * x2 ** 2
-
-eta = 0.4
-def gd_2d(x1, x2, s1, s2):
-    return (x1 - eta * 0.2 * x1, x2 - eta * 4 * x2, 0, 0)
-
-eta, beta = 0.6, 0.5
-def momentum_2d(x1, x2, v1, v2):
-    v1 = beta * v1 + 0.2 * x1
-    v2 = beta * v2 + 4 * x2
-    return x1 - eta * v1, x2 - eta * v2, v1, v2
-
-eta = 0.4
-def adagrad_2d(x1, x2, s1, s2):
-    eps = 1e-6
-    g1, g2 = 0.2 * x1, 4 * x2
-    s1 += g1 ** 2
-    s2 += g2 ** 2
-    x1 -= eta / math.sqrt(s1 + eps) * g1
-    x2 -= eta / math.sqrt(s2 + eps) * g2
-    return x1, x2, s1, s2
-    
-
-eta, gamma = 0.4, 0.9
-def rmsprop_2d(x1, x2, s1, s2):
-    g1, g2, eps = 0.2 * x1,  4 * x2, 1e-6
-    s1 = gamma * s1 + (1 - gamma) * g1 ** 2
-    s2 = gamma * s2 + (2 - gamma) * g2 ** 2
-    x1 -= eta / math.sqrt(s1 + eps) * g1
-    x2 -= eta / math.sqrt(s2 + eps) * g2
-    return x1, x2, s1, s2
-
-ProgressBoard.show_trace_2d(f_2d, Utility.train_2d(rmsprop_2d))
-plt.show()
+#def f_2d(x1, x2):
+    #return 0.1 * x1 ** 2 + 2 * x2 ** 2
+#
+#eta = 0.4
+#def gd_2d(x1, x2, s1, s2):
+    #return (x1 - eta * 0.2 * x1, x2 - eta * 4 * x2, 0, 0)
+#
+#eta, beta = 0.6, 0.5
+#def momentum_2d(x1, x2, v1, v2):
+    #v1 = beta * v1 + 0.2 * x1
+    #v2 = beta * v2 + 4 * x2
+    #return x1 - eta * v1, x2 - eta * v2, v1, v2
+#
+#eta = 0.4
+#def adagrad_2d(x1, x2, s1, s2):
+    #eps = 1e-6
+    #g1, g2 = 0.2 * x1, 4 * x2
+    #s1 += g1 ** 2
+    #s2 += g2 ** 2
+    #x1 -= eta / math.sqrt(s1 + eps) * g1
+    #x2 -= eta / math.sqrt(s2 + eps) * g2
+    #return x1, x2, s1, s2
+   # 
+#
+#eta, gamma = 0.4, 0.9
+#def rmsprop_2d(x1, x2, s1, s2):
+    #g1, g2, eps = 0.2 * x1,  4 * x2, 1e-6
+    #s1 = gamma * s1 + (1 - gamma) * g1 ** 2
+    #s2 = gamma * s2 + (2 - gamma) * g2 ** 2
+    #x1 -= eta / math.sqrt(s1 + eps) * g1
+    #x2 -= eta / math.sqrt(s2 + eps) * g2
+    #return x1, x2, s1, s2
+#
+#ProgressBoard.show_trace_2d(f_2d, Utility.train_2d(rmsprop_2d))
+#plt.show()
 
 
 #betas = [0.95, 0.9, 0.6, 0]
