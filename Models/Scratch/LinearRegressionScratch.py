@@ -6,13 +6,13 @@ from Models.Scratch.SGD import SGD
 import math
 
 class LinearRegressionScratch(Module):
-    def __init__(self, num_inputs, lr, sigma=0.01, momentum = 0.0):
+    def __init__(self, num_inputs, optimizer, sigma=0.01):
         super().__init__()
 
         self.num_inputs = num_inputs
-        self.lr = lr
+        self.optimizer = optimizer
+
         self.sigma = sigma
-        self.momentum = momentum
 
         self.w = torch.normal(0, sigma, (num_inputs, 1), requires_grad=True)
         self.b = torch.zeros(1, requires_grad=True)
@@ -30,4 +30,4 @@ class LinearRegressionScratch(Module):
         return l.mean()
 
     def configure_optimizers(self):
-        return SGD([self.w, self.b], self.lr, self.momentum)
+        return self.optimizer([self.w, self.b])

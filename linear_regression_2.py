@@ -2,12 +2,11 @@ from Utility.Timer import Timer
 import Utility.Utility as Utility
 from DataModules.CH11DataModule import CH11DataModule
 from Models.LinearRegression import LinearRegression
-from Models.AdagradLinearRegression import AdagradLinearRegression
-from Models.RMSPropLinearRegression import RMSPropLinearRegression
 from Models.Scratch.LinearRegressionScratch import LinearRegressionScratch
-from Models.Scratch.AdagradLinearRegressionScratch import AdagradLinearRegressionScratch
-from Models.Scratch.RMSPropLinearRegressionScratch import RMSPropLinearRegressionScratch
 from Trainer.Trainer import Trainer
+from Models.Scratch.SGD import SGD
+from Models.Scratch.Adagrad import Adagrad
+from Models.Scratch.RMSProp import RMSProp
 import torch
 import math
 
@@ -19,11 +18,21 @@ import matplotlib.pyplot as plt
 board = ProgressBoard()
 board.xlabel='epoch'
 
+sgd_scratch_optim = lambda params: SGD(params, 0.01, momentum=0.9)
+sgd_optim = lambda params: torch.optim.SGD(params, 0.01, momentum=0.9)
+
+adagrad_scratch_optim = lambda params: Adagrad(params, lr=0.01)
+adagrad_optim = lambda params: torch.optim.Adagrad(params, lr = 0.01)
+
+rms_prop_scratch_optim = lambda params: RMSProp(params, lr=0.01, gamma=0.9)
+rms_prop_optim = lambda params: torch.optim.RMSprop(params, lr=0.01, alpha=0.9)
 models = [
-    (RMSPropLinearRegressionScratch(num_inputs = 5, lr = 0.01, gamma = 1.0), "rms_prop_scratch"),
-    (RMSPropLinearRegression(lr = 0.01, gamma = 1.0), "rms_prop"),
-    (AdagradLinearRegression(lr = 0.01), "adagrad"),
-    (AdagradLinearRegressionScratch(num_inputs = 5, lr = 0.01), "adagrad_scratch"),
+    #(LinearRegressionScratch(num_inputs=5, optimizer=sgd_scratch_optim), "linear_scratch"),
+    #(LinearRegression(optimizer=sgd_optim), "linear"),
+    (LinearRegressionScratch(num_inputs=5, optimizer=adagrad_scratch_optim), "adagrad_scratch"),
+    (LinearRegression(optimizer=adagrad_optim), "adagrad"),
+    (LinearRegressionScratch(num_inputs=5, optimizer=rms_prop_scratch_optim), "rms_prop_scratch"),
+    (LinearRegression(optimizer=rms_prop_optim), "rms_prop")
 ]
 
 for model,model_name in models:

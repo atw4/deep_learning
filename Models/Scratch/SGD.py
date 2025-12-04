@@ -11,8 +11,8 @@ class SGD():
 
     def step(self):
         for param, v in zip(self.params, self.vs):
-            v = self.momentum * v + param.grad
-            param -= self.lr * v
+            v[:] = self.momentum * v + param.grad
+            param[:] -= self.lr * v
 
     def zero_grad(self):
         for param in self.params:
