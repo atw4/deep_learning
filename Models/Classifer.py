@@ -10,8 +10,10 @@ class Classifier(Module):
 
     def validation_step(self, batch):
         Y_hat = self(*batch[:-1])
-        self.plot('loss', self.loss(Y_hat, batch[-1]), train=False)
-        self.plot('acc', self.accuracy(Y_hat, batch[-1]), train=False)
+        loss = self.loss(Y_hat, batch[-1])
+        accuracy = self.accuracy(Y_hat, batch[-1])
+
+        return loss, accuracy
 
     def accuracy(self, Y_hat, Y, averaged=True):
         Y_hat = Y_hat.reshape((-1, Y_hat.shape[-1]))
