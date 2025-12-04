@@ -32,7 +32,8 @@ class Module(nn.Module):
     def configure_optimizers(self):
         return torch.optim.SGD(self.parameters(), lr=self.lr)
 
-
+    def configure_lr_scheduler(self, optim):
+        return None
 
     def apply_init(self, inputs, init=None):
         self.forward(*inputs)

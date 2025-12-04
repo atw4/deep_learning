@@ -30,6 +30,7 @@ class Trainer:
         self.model.training_step(lazy_batch)
 
         self.optim = model.configure_optimizers()
+        self.lr_scheduler = model.configure_lr_scheduler(self.optim)
 
         num_train_batches = len(self.train_dataloader)
         num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
@@ -76,6 +77,9 @@ class Trainer:
         self.stats.setEpochStat("loss", avg_epoch_loss)
         self.stats.setEpochStat("accuracy", avg_epoch_accuracy)
         self.stats.endEpoch()
+
+        if self.lr_scheduler is not None:
+            self.lr_scheduler.step()
 
 
         if self.val_dataloader is None:

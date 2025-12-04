@@ -21,7 +21,7 @@ from ProgressBoard import ProgressBoard
 import matplotlib.pyplot as plt
 
 trainer = Trainer(max_epochs=30, num_gpus=1)
-data = FashionMNIST(batch_size=128)
+data = FashionMNIST(batch_size=256)
 model = LeNet(lr = 0.3)
 model.apply_init([next(iter(data.get_dataloader(True)))[0]], Utility.init_cnn)
 trainer.fit(model, data)
