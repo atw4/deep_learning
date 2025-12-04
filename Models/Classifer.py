@@ -8,6 +8,13 @@ class Classifier(Module):
     def __init__(self):
         super().__init__()
 
+    def training_step(self, batch):
+        Y_hat = self(*batch[:-1])
+        loss = self.loss(Y_hat, batch[-1])
+        accuracy = self.accuracy(Y_hat, batch[-1])
+
+        return loss, accuracy
+
     def validation_step(self, batch):
         Y_hat = self(*batch[:-1])
         loss = self.loss(Y_hat, batch[-1])

@@ -12,12 +12,15 @@ class TrainerStatistics:
                  capture_valid_per_epoch=1,
                  show_train_epoch_loss_stat=True,
                  show_val_epoch_loss_stat=True,
+                 show_train_epoch_accuracy_stat=True,
                  show_val_epoch_accuracy_stat=True):
         self.num_train_batches = num_train_batches
         self.num_val_batches = num_val_batches
 
         self.show_train_epoch_loss_stat = show_train_epoch_loss_stat
         self.show_val_epoch_loss_stat = show_val_epoch_loss_stat
+
+        self.show_train_epoch_accuracy_stat = show_train_epoch_accuracy_stat
         self.show_val_epoch_accuracy_stat = show_val_epoch_accuracy_stat
 
         self.train_epochs = [] 
@@ -70,6 +73,8 @@ class TrainerStatistics:
         if self.train:
             if self.show_train_epoch_loss_stat:
                 self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "train loss")
+            if self.show_train_epoch_accuracy_stat:
+                self.plot(self.active_epoch["epoch_x"], self.active_epoch["accuracy"], "train accuracy" )
         else:
             if self.show_val_epoch_loss_stat:
                 self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "val loss")
