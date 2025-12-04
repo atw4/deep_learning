@@ -27,7 +27,7 @@ class CH11DataModule(DataModule):
         data = torch.from_numpy((data - data.mean(axis=0)) / data.std(axis=0)).to(torch.float32)
         data = data[:n]
 
-        X, y = data[:self.num_train, :-1], data[:self.num_train, -1]
+        X, y = data[:n, :-1], data[:n, -1]
         y = y.unsqueeze(1)
 
         return X, y

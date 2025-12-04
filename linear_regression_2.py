@@ -1,6 +1,7 @@
 from Utility.Timer import Timer
 import Utility.Utility as Utility
 from DataModules.CH11DataModule import CH11DataModule
+from DataModules.SyntheticRegressionData import SyntheticRegressionData
 from Models.LinearRegression import LinearRegression
 from Models.Scratch.LinearRegressionScratch import LinearRegressionScratch
 from Trainer.Trainer import Trainer
@@ -55,13 +56,14 @@ models = [
     #(LinearRegression(optimizer=adadelta_optim), "adadelta"),
     #(LinearRegressionScratch(num_inputs=5, optimizer=adam_scratch_optim), "adam_scratch"),
     #(LinearRegression(optimizer=adam_optim), "adam"),
-    (LinearRegressionScratch(num_inputs=5, optimizer=yogi_scratch_optim), "yogi_scratch")
+    (LinearRegression(optimizer=sgd_optim), "sgd_optim")
 ]
 
 for model,model_name in models:
     trainer = Trainer(max_epochs=10, num_gpus=1)
-    ch11 = CH11DataModule(batch_size = 10, num_train=750, num_val=750)
-    trainer.fit(model, ch11)
+    #data = CH11DataModule(batch_size = 10, num_train=750, num_val=750)
+    data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
+    trainer.fit(model, data)
 
     trainer_stats = trainer.stats
 
