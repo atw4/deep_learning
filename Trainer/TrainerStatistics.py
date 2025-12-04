@@ -11,12 +11,14 @@ class TrainerStatistics:
                  capture_train_per_epoch=1,
                  capture_valid_per_epoch=1,
                  show_train_epoch_loss_stat=True,
-                 show_val_epoch_loss_stat=True):
+                 show_val_epoch_loss_stat=True,
+                 show_val_epoch_accuracy_stat=True):
         self.num_train_batches = num_train_batches
         self.num_val_batches = num_val_batches
 
         self.show_train_epoch_loss_stat = show_train_epoch_loss_stat
         self.show_val_epoch_loss_stat = show_val_epoch_loss_stat
+        self.show_val_epoch_accuracy_stat = show_val_epoch_accuracy_stat
 
         self.train_epochs = [] 
         self.val_epochs = [] 
@@ -65,11 +67,15 @@ class TrainerStatistics:
         self.active_epoch["duration"] = self.active_epoch["end_time"] - self.active_epoch["start_time"]
 
 
-        if self.train and self.show_train_epoch_loss_stat:
-            self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "train loss")
-        if not self.train and self.show_val_epoch_loss_stat:
-            self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "val loss")
-
+        if self.train:
+            if self.show_train_epoch_loss_stat:
+                self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "train loss")
+        else:
+            if self.show_val_epoch_loss_stat:
+                self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "val loss")
+            if self.show_val_epoch_accuracy_stat:
+                self.plot(self.active_epoch["epoch_x"], self.active_epoch["accuracy"], "val accuracy")
+                
         self.active_epoch = None
 
 

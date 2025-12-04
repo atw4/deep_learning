@@ -49,13 +49,19 @@ class Trainer:
 
         self.stats.startEpoch(True)
         epoch_loss = 0
+        epoch_accuracy = 0
         for train_batch_idx, batch in enumerate(self.train_dataloader):
             self.stats.startBatch(train_batch_idx)
 
-            loss = self.model.training_step(self.prepare_batch(batch))
+            loss, accuracy = self.model.training_step(self.prepare_batch(batch))
             scalar_loss = loss.item()
-            epoch_loss+= scalar_loss
+            epoch_loss += scalar_loss
             self.stats.setBatchStat("loss", scalar_loss)
+
+            if accuracy is not None:
+                scalar_accuracy = accuracy.item()
+                epoch_accuracy += scalar_accuracy
+                self.stats.setBatchStat("accuracy", scalar_accuracy)
              
             self.optim.zero_grad()
             with torch.no_grad():
@@ -66,7 +72,9 @@ class Trainer:
 
             self.stats.endBatch()
         avg_epoch_loss = epoch_loss / len(self.train_dataloader) if len(self.train_dataloader) > 0 else 0
+        avg_epoch_accuracy = epoch_accuracy / len(self.train_dataloader) if len(self.train_dataloader) > 0 else 0
         self.stats.setEpochStat("loss", avg_epoch_loss)
+        self.stats.setEpochStat("accuracy", avg_epoch_accuracy)
         self.stats.endEpoch()
 
 
@@ -76,18 +84,28 @@ class Trainer:
 
         self.stats.startEpoch(False)
         epoch_loss = 0
+        epoch_accuracy = 0
         for val_batch_idx, batch in enumerate(self.val_dataloader):
             self.stats.startBatch(val_batch_idx)
 
             with torch.no_grad():
-                loss = self.model.validation_step(self.prepare_batch(batch))
+                loss, accuracy = self.model.validation_step(self.prepare_batch(batch))
                 scalar_loss = loss.item()
                 epoch_loss += scalar_loss
                 self.stats.setBatchStat("loss", scalar_loss)
 
+                if accuracy is not None:
+                    scalar_accuracy = accuracy.item()
+                    epoch_accuracy += scalar_accuracy
+                    self.stats.setBatchStat("accuracy", scalar_accuracy)
+
+
             self.stats.endBatch()
+
         avg_epoch_loss = epoch_loss / len(self.val_dataloader) if len(self.val_dataloader) > 0 else 0
+        avg_epoch_accuracy = epoch_accuracy / len(self.val_dataloader) if len(self.val_dataloader) > 0 else 0
         self.stats.setEpochStat("loss", avg_epoch_loss)
+        self.stats.setEpochStat("accuracy", avg_epoch_accuracy)
         self.stats.endEpoch()
 
     def clip_gradients(self, grad_clip_val, model):
