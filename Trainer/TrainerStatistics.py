@@ -7,16 +7,23 @@ import time
 import math
 
 class TrainerStatistics:
-    def __init__(self, num_train_batches, num_val_batches, capture_train_per_epoch=20, capture_valid_per_epoch=1):
+    def __init__(self, num_train_batches, num_val_batches,
+                 capture_train_per_epoch=1,
+                 capture_valid_per_epoch=1,
+                 show_train_epoch_loss_stat=False,
+                 show_val_epoch_loss_stat=False):
         self.num_train_batches = num_train_batches
         self.num_val_batches = num_val_batches
-        self.epochs = [] 
+
+        self.show_train_epoch_loss_stat = show_train_epoch_loss_stat
+        self.show_val_epoch_loss_stat = show_val_epoch_loss_stat
+
+        self.train_epochs = [] 
+        self.val_epochs = [] 
          
         # Batches train/val
-        self.batches = {
-            True : [],
-            False : []
-        }
+        self.train_batches = []
+        self.val_batches = []
 
         self.train = None
 
@@ -32,18 +39,21 @@ class TrainerStatistics:
         self.active_batch = None
         self.active_epoch = None
 
-    def startEpoch(self):
+    def startEpoch(self, train):
+        self.train = train
         self.active_epoch = {}
-        self.epochs.append(self.active_epoch)
+
+        epochs = self.train_epochs if self.train else self.val_epochs
+        epochs.append(self.active_epoch)
 
         self.active_epoch["start_time"] = time.time()
 
 
-        if len(self.epochs) <= 1:
+        if len(epochs) <= 1:
             self.active_epoch["rel_start_time"] = 0
             self.active_epoch["epoch_idx"] = 0
         else:
-            last_epoch = self.epochs[-2]
+            last_epoch = epochs[-2]
             self.active_epoch["rel_start_time"] = last_epoch["rel_start_time"] + (self.active_epoch["start_time"] - last_epoch["start_time"])
             self.active_epoch["epoch_idx"] = last_epoch["epoch_idx"] + 1
 
@@ -54,7 +64,14 @@ class TrainerStatistics:
         self.active_epoch["rel_end_time"] = self.active_epoch["rel_start_time"] + (self.active_epoch["end_time"] - self.active_epoch["start_time"])
         self.active_epoch["duration"] = self.active_epoch["end_time"] - self.active_epoch["start_time"]
 
+
+        if self.train and self.show_train_epoch_loss_stat:
+            self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "train loss")
+        if not self.train and self.show_val_epoch_loss_stat:
+            self.plot(self.active_epoch["epoch_x"], self.active_epoch["loss"], "val loss")
+
         self.active_epoch = None
+
 
     def setEpochStat(self, key, value):
         if self.active_epoch is None:
@@ -64,24 +81,27 @@ class TrainerStatistics:
         
 
             
-    def startBatch(self, train, batch_idx):
-        self.train = train
-
+    def startBatch(self, batch_idx):
         #Should we capture this batch
-        num = self.num_train_batches if train else self.num_val_batches
+        num = self.num_train_batches if self.train else self.num_val_batches
 
-        cap = math.ceil(num / self.capture_per_epoch[train])
+        cap = math.ceil(num / self.capture_per_epoch[self.train])
 
         if batch_idx % cap != 0:
             self.active_batch = None
             return
 
+        epochs = self.train_epochs if self.train else self.val_epochs
+
         self.active_batch = {"epoch_idx" : self.active_epoch["epoch_idx"], "batch_idx" : batch_idx}
-        self.active_batch["epoch_x"] = self.getX(len(self.epochs), self.active_batch["batch_idx"], train)
+        self.active_batch["epoch_x"] = self.getX(len(epochs), self.active_batch["batch_idx"], self.train)
         self.active_batch["start_time"] = time.time()
         self.active_batch["rel_start_time"] = self.active_epoch["rel_start_time"] + (self.active_batch["start_time"] - self.active_epoch["start_time"])
 
-        self.batches[train].append(self.active_batch)
+        if self.train:
+            self.train_batches.append(self.active_batch)
+        else:
+            self.val_batches.append(self.active_batch)
 
     def setBatchStat(self, key, value):
         if self.active_batch is None:
@@ -90,13 +110,12 @@ class TrainerStatistics:
         self.active_batch[key] = value
             
 
-
-
     def endBatch(self):
         if self.active_batch is None:
             return
 
         self.active_batch["end_time"] = time.time()
+        self.active_batch = None
         
 
     def getX(self, epoch, batch_idx, train):
@@ -107,21 +126,26 @@ class TrainerStatistics:
 
         return x
 
+
     def plot(self, x, y, label):
         """Plot a point in animation."""
         self.board.xlabel = 'epoch'
 
-        self.board.draw(x, y.to(torch.device('cpu')).detach().numpy(), label)
+        self.board.draw(x, y, label)
 
-    def get_stat(self, statType, x_key, y_key):
-        ret = []
+    def get_train_epoch_loss_stat(self):
+        return self.get_stat(self.train_epochs, "epoch_x", "loss")
+        
+    def get_train_batch_loss_stat(self):
+        return self.get_stat(self.train_batches, "epoch_x", "loss")
 
-        ret = []
-        if statType == "epoch":
-            ret = [(e[x_key], e[y_key]) for e in self.epochs if x_key in e and y_key in e]
-        elif statType == "train_batch":
-            ret = [(e[x_key], e[y_key]) for e in self.batches[True] if x_key in e and y_key in e]
+    def get_val_epoch_loss_stat(self):
+        return self.get_stat(self.val_epochs, "epoch_x", "loss")
+        
+    def get_val_batch_loss_stat(self):
+        return self.get_stat(self.val_batches, "epoch_x", "loss")
+        
+    def get_stat(self, array, x_key, y_key):
+        return [(e[x_key], e[y_key]) for e in array if x_key in e and y_key in e]
 
-        return ret
-                
-            
+
