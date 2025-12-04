@@ -2,7 +2,7 @@
 
 import torch
 import torch.nn.functional as F
-from Module import Module
+from Models.Module import Module
 
 class Classifier(Module):
     def __init__(self):

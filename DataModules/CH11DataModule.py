@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from DataModule import DataModule
+from DataModules.DataModule import DataModule
 import Utility.Utility as Utility
 import numpy as np
 import torch

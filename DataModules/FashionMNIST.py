@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from DataModule import DataModule
+from DataModules.DataModule import DataModule
 import torchvision
 from torchvision import transforms
 import torch

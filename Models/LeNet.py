@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from torch import nn
-from Classifer import Classifier
+from Models.Classifer import Classifier
 
 class LeNet(Classifier):
     def __init__(self, lr=0.1, num_classes=10):
