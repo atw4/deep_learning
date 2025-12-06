@@ -49,6 +49,8 @@ yogi_scratch_optim = lambda params: Yogi(params, lr=0.01, beta1=0.9, beta2=0.999
 
 #Schedulers
 scheduler = lambda optim: SquareRootScheduler(optim)
+multistep_scheduler = lambda optim: torch.optim.lr_scheduler.MultiStepLR(optim, milestones=[3, 5])
+
 models = [
     #(LinearRegressionScratch(num_inputs=5, optimizer=sgd_scratch_optim), "linear_scratch"),
     #(LinearRegression(optimizer=sgd_optim), "linear"),
@@ -58,8 +60,8 @@ models = [
     #(LinearRegression(optimizer=rms_prop_optim), "rms_prop")
     #(LinearRegressionScratch(num_inputs=5, optimizer=adadelta_scratch_optim), "adadelta_scratch"),
     #(LinearRegression(optimizer=adadelta_optim), "adadelta"),
-    (LinearRegression(optimizer=sgd_optim), "sgd_optim"),
-    (LinearRegressionScratch(num_inputs=5, optimizer=sgd_optim), "sgd_grad_optim")
+    #(LinearRegression(optimizer=sgd_optim), "sgd_optim_scheduler"),
+    (LinearRegression(optimizer=sgd_optim, lr_scheduler=multistep_scheduler), "sgd_optim")
     #(LeNet(lr=0.3), "lenet")
 ]
 
