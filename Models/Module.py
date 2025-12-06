@@ -43,3 +43,9 @@ class Module(nn.Module):
         self.forward(*inputs)
         if init is not None:
             self.net.apply(init)
+
+    def layer_summary(self, X_shape):
+        X = torch.randn(*X_shape)
+        for layer in self.net:
+            X = layer(X)
+            print(layer.__class__.__name__, 'output shape:\t', X.shape)
