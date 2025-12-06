@@ -64,7 +64,7 @@ models = [
 ]
 
 for model,model_name in models:
-    trainer = Trainer(max_epochs=10, num_gpus=1)
+    trainer = Trainer(max_epochs=30, num_gpus=1)
     
     #data = CH11DataModule(batch_size = 10, num_train=750, num_val=750)
     data = FashionMNIST()
