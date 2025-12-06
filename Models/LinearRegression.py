@@ -6,8 +6,8 @@ from Models.Module import Module
 
 
 class LinearRegression(Module):
-    def __init__(self, optimizer):
-        super().__init__()
+    def __init__(self, optimizer, **kwargs):
+        super().__init__(**kwargs)
 
         self.optimizer = optimizer
         self.net = nn.LazyLinear(1)
@@ -16,7 +16,7 @@ class LinearRegression(Module):
 
     def loss(self, y_hat, y):
         fn = nn.MSELoss()
-        return fn(y_hat, y)
+        return fn(y_hat, y), None
 
     def configure_optimizers(self):
         return self.optimizer(self.parameters())

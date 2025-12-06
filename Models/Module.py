@@ -4,8 +4,9 @@ from torch import nn
 
 
 class Module(nn.Module):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, lr_scheduler=None, **kwargs):
+        super().__init__(**kwargs)
+        self.lr_scheduler = lr_scheduler
 
     def loss(self, y_hat, y):
         raise NotImplementedError
@@ -33,7 +34,10 @@ class Module(nn.Module):
         return torch.optim.SGD(self.parameters(), lr=self.lr)
 
     def configure_lr_scheduler(self, optim):
-        return None
+        if self.lr_scheduler is None:
+            return None
+
+        return self.lr_scheduler(optim)
 
     def apply_init(self, inputs, init=None):
         self.forward(*inputs)

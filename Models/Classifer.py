@@ -5,8 +5,8 @@ import torch.nn.functional as F
 from Models.Module import Module
 
 class Classifier(Module):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def training_step(self, batch):
         Y_hat = self(*batch[:-1])

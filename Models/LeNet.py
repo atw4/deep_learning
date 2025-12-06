@@ -4,8 +4,8 @@ from torch import nn
 from Models.Classifer import Classifier
 
 class LeNet(Classifier):
-    def __init__(self, lr=0.1, num_classes=10):
-        super().__init__()
+    def __init__(self, lr=0.1, num_classes=10, **kwargs):
+        super().__init__(**kwargs)
         self.lr = lr
         self.num_classes = num_classes
 

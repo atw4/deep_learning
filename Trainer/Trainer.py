@@ -36,16 +36,15 @@ class Trainer:
         num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
         self.stats = TrainerStatistics(num_train_batches, num_val_batches)
         
-        for _ in range(self.max_epochs):
-
-            self.fit_epoch()
+        for epoch in range(self.max_epochs):
+            self.fit_epoch(epoch)
 
     def prepare_batch(self, batch):
         batch = [a.to(self.device()) for a in batch]
 
         return batch
 
-    def fit_epoch(self):
+    def fit_epoch(self, epoch):
         self.model.train()
 
         self.stats.startEpoch(True)
@@ -79,7 +78,7 @@ class Trainer:
         self.stats.endEpoch()
 
         if self.lr_scheduler is not None:
-            self.lr_scheduler.step()
+            self.lr_scheduler.step(epoch)
 
 
         if self.val_dataloader is None:

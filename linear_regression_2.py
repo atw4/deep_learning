@@ -13,63 +13,76 @@ from Models.Scratch.Adam import Adam
 from Models.Scratch.Yogi import Yogi
 from Models.LeNet import LeNet
 from DataModules.FashionMNIST import FashionMNIST
+from Models.Scratch.SquareRootScheduler import SquareRootScheduler
 import torch
 import math
 
 from ProgressBoard import ProgressBoard
-#import ProgressBoard
 import matplotlib.pyplot as plt
 
-trainer = Trainer(max_epochs=30, num_gpus=1)
-data = FashionMNIST(batch_size=256)
-model = LeNet(lr = 0.3)
-model.apply_init([next(iter(data.get_dataloader(True)))[0]], Utility.init_cnn)
-trainer.fit(model, data)
+#trainer = Trainer(max_epochs=30, num_gpus=1)
+#data = FashionMNIST(batch_size=256)
+#model = LeNet(lr = 0.3)
+#model.apply_init([next(iter(data.get_dataloader(True)))[0]], Utility.init_cnn)
+#trainer.fit(model, data)
+#plt.show()
+
+board = ProgressBoard()
+board.xlabel='epoch'
+
+sgd_scratch_optim = lambda params: SGD(params, 0.01, momentum=0.9)
+sgd_optim = lambda params: torch.optim.SGD(params, 0.01, momentum=0.9)
+
+adagrad_scratch_optim = lambda params: Adagrad(params, lr=0.01)
+adagrad_optim = lambda params: torch.optim.Adagrad(params, lr = 0.01)
+
+rms_prop_scratch_optim = lambda params: RMSProp(params, lr=0.01, gamma=0.9)
+
+
+adadelta_scratch_optim = lambda params: Adadelta(params, rho=0.9)
+adadelta_optim = lambda params: torch.optim.Adadelta(params, rho=0.9)
+
+adam_scratch_optim = lambda params: Adam(params, lr=0.01, beta1=0.9, beta2=0.999)
+adam_optim = lambda params: torch.optim.Adam(params, lr=0.01)
+
+yogi_scratch_optim = lambda params: Yogi(params, lr=0.01, beta1=0.9, beta2=0.999)
+
+#Schedulers
+scheduler = lambda optim: SquareRootScheduler(optim)
+models = [
+    #(LinearRegressionScratch(num_inputs=5, optimizer=sgd_scratch_optim), "linear_scratch"),
+    #(LinearRegression(optimizer=sgd_optim), "linear"),
+    #(LinearRegressionScratch(num_inputs=5, optimizer=adagrad_scratch_optim), "adagrad_scratch"),
+    #(LinearRegression(optimizer=adagrad_optim), "adagrad"),
+    #(LinearRegressionScratch(num_inputs=5, optimizer=rms_prop_scratch_optim), "rms_prop_scratch"),
+    #(LinearRegression(optimizer=rms_prop_optim), "rms_prop")
+    #(LinearRegressionScratch(num_inputs=5, optimizer=adadelta_scratch_optim), "adadelta_scratch"),
+    #(LinearRegression(optimizer=adadelta_optim), "adadelta"),
+    #(LinearRegressionScratch(num_inputs=5, optimizer=adam_scratch_optim), "adam_scratch"),
+    #(LinearRegression(optimizer=sgd_scratch_optim,
+    (LeNet(), "lenet")
+]
+
+for model,model_name in models:
+    trainer = Trainer(max_epochs=10, num_gpus=1)
+    
+    #data = CH11DataModule(batch_size = 10, num_train=750, num_val=750)
+    data = FashionMNIST()
+    #data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
+    trainer.fit(model, data)
+
+    trainer_stats = trainer.stats
+
+
 plt.show()
 
-#board = ProgressBoard()
-#board.xlabel='epoch'
+#num_epochs=10
 #
-#sgd_scratch_optim = lambda params: SGD(params, 0.01, momentum=0.9)
-#sgd_optim = lambda params: torch.optim.SGD(params, 0.01, momentum=0.9)
-#
-#adagrad_scratch_optim = lambda params: Adagrad(params, lr=0.01)
-#adagrad_optim = lambda params: torch.optim.Adagrad(params, lr = 0.01)
-#
-#rms_prop_scratch_optim = lambda params: RMSProp(params, lr=0.01, gamma=0.9)
-#
-#
-#adadelta_scratch_optim = lambda params: Adadelta(params, rho=0.9)
-#adadelta_optim = lambda params: torch.optim.Adadelta(params, rho=0.9)
-#
-#adam_scratch_optim = lambda params: Adam(params, lr=0.01, beta1=0.9, beta2=0.999)
-#adam_optim = lambda params: torch.optim.Adam(params, lr=0.01)
-#
-#yogi_scratch_optim = lambda params: Yogi(params, lr=0.01, beta1=0.9, beta2=0.999)
-#models = [
-    ##(LinearRegressionScratch(num_inputs=5, optimizer=sgd_scratch_optim), "linear_scratch"),
-    ##(LinearRegression(optimizer=sgd_optim), "linear"),
-    ##(LinearRegressionScratch(num_inputs=5, optimizer=adagrad_scratch_optim), "adagrad_scratch"),
-    ##(LinearRegression(optimizer=adagrad_optim), "adagrad"),
-    ##(LinearRegressionScratch(num_inputs=5, optimizer=rms_prop_scratch_optim), "rms_prop_scratch"),
-    ##(LinearRegression(optimizer=rms_prop_optim), "rms_prop")
-    ##(LinearRegressionScratch(num_inputs=5, optimizer=adadelta_scratch_optim), "adadelta_scratch"),
-    ##(LinearRegression(optimizer=adadelta_optim), "adadelta"),
-    ##(LinearRegressionScratch(num_inputs=5, optimizer=adam_scratch_optim), "adam_scratch"),
-    ##(LinearRegression(optimizer=adam_optim), "adam"),
-    #(LinearRegression(optimizer=sgd_optim), "sgd_optim")
-#]
-#
-#for model,model_name in models:
-    #trainer = Trainer(max_epochs=10, num_gpus=1)
-    ##data = CH11DataModule(batch_size = 10, num_train=750, num_val=750)
-    #data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
-    #trainer.fit(model, data)
-#
-    #trainer_stats = trainer.stats
-#
+#for t in range(num_epochs):
+    #board.draw(t, scheduler(t), 'asdf')
 #
 #plt.show()
+
 
 #board = ProgressBoard()
 #board.xlabel='epoch'
