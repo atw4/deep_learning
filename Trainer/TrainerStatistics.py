@@ -147,6 +147,20 @@ class TrainerStatistics:
 
         self.board.draw(x, y, label)
 
+    #Accuracy related stats
+    def get_train_epoch_accuracy_stat(self):
+        return self.get_stat(self.train_epochs, "epoch_x", "accuracy")
+        
+    def get_train_batch_accuracy_stat(self):
+        return self.get_stat(self.train_batches, "epoch_x", "accuracy")
+
+    def get_val_epoch_accuracy_stat(self):
+        return self.get_stat(self.val_epochs, "epoch_x", "accuracy")
+        
+    def get_val_batch_accuracy_stat(self):
+        return self.get_stat(self.val_batches, "epoch_x", "accuracy")
+
+    #Loss related stats
     def get_train_epoch_loss_stat(self):
         return self.get_stat(self.train_epochs, "epoch_x", "loss")
         

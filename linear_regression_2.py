@@ -54,13 +54,13 @@ models = [
     #(LinearRegression(optimizer=sgd_optim), "linear"),
     #(LinearRegressionScratch(num_inputs=5, optimizer=adagrad_scratch_optim), "adagrad_scratch"),
     #(LinearRegression(optimizer=adagrad_optim), "adagrad"),
-    #(LinearRegressionScratch(num_inputs=5, optimizer=rms_prop_scratch_optim), "rms_prop_scratch"),
+    #(qonScratch(num_inputs=5, optimizer=rms_prop_scratch_optim), "rms_prop_scratch"),
     #(LinearRegression(optimizer=rms_prop_optim), "rms_prop")
     #(LinearRegressionScratch(num_inputs=5, optimizer=adadelta_scratch_optim), "adadelta_scratch"),
     #(LinearRegression(optimizer=adadelta_optim), "adadelta"),
     #(LinearRegressionScratch(num_inputs=5, optimizer=adam_scratch_optim), "adam_scratch"),
     #(LinearRegression(optimizer=sgd_scratch_optim,
-    (LeNet(), "lenet")
+    (LeNet(lr=0.3), "lenet")
 ]
 
 for model,model_name in models:
@@ -71,7 +71,12 @@ for model,model_name in models:
     #data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
     trainer.fit(model, data)
 
-    trainer_stats = trainer.stats
+    stats = trainer.stats
+    train_loss = stats.get_train_epoch_loss_stat()[-1]
+    val_loss = stats.get_val_epoch_loss_stat()[-1]
+    train_accuracy = stats.get_train_epoch_accuracy_stat()[-1]
+    val_accuracy = stats.get_val_epoch_accuracy_stat()[-1]
+    print(f'train loss {train_loss}, val loss {val_loss}, train accuracy {train_accuracy}, val accuracy {val_accuracy}')
 
 
 plt.show()
