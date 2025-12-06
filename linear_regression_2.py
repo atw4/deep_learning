@@ -67,7 +67,7 @@ for model,model_name in models:
     trainer = Trainer(max_epochs=30, num_gpus=1)
     
     #data = CH11DataModule(batch_size = 10, num_train=750, num_val=750)
-    data = FashionMNIST()
+    data = FashionMNIST(batch_size=256)
     #data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
     trainer.fit(model, data)
 
