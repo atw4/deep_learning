@@ -6,8 +6,8 @@ from Models.Scratch.SGD import SGD
 import math
 
 class LinearRegressionScratch(Module):
-    def __init__(self, num_inputs, optimizer, sigma=0.01):
-        super().__init__()
+    def __init__(self, num_inputs, optimizer, sigma=0.01, **kwargs):
+        super().__init__(**kwargs)
 
         self.num_inputs = num_inputs
         self.optimizer = optimizer
@@ -27,7 +27,7 @@ class LinearRegressionScratch(Module):
     def loss(self, y_hat, y):
         #ll = ((y_hat - y) ** 2) / 2
         l = ((y_hat - y) ** 2)  #Remove the factor of 2 so it matches the MseLoss implementation
-        return l.mean()
+        return l.mean(), None
 
     def configure_optimizers(self):
         return self.optimizer([self.w, self.b])

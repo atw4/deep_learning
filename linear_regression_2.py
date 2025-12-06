@@ -30,8 +30,8 @@ import matplotlib.pyplot as plt
 board = ProgressBoard()
 board.xlabel='epoch'
 
-sgd_scratch_optim = lambda params: SGD(params, 0.01, momentum=0.9)
-sgd_optim = lambda params: torch.optim.SGD(params, 0.01, momentum=0.9)
+sgd_scratch_optim = lambda params: SGD(params, 0.1)
+sgd_optim = lambda params: torch.optim.SGD(params, 0.1)
 
 adagrad_scratch_optim = lambda params: Adagrad(params, lr=0.01)
 adagrad_optim = lambda params: torch.optim.Adagrad(params, lr = 0.01)
@@ -58,16 +58,16 @@ models = [
     #(LinearRegression(optimizer=rms_prop_optim), "rms_prop")
     #(LinearRegressionScratch(num_inputs=5, optimizer=adadelta_scratch_optim), "adadelta_scratch"),
     #(LinearRegression(optimizer=adadelta_optim), "adadelta"),
-    #(LinearRegressionScratch(num_inputs=5, optimizer=adam_scratch_optim), "adam_scratch"),
-    #(LinearRegression(optimizer=sgd_scratch_optim,
-    (LeNet(lr=0.3), "lenet")
+    (LinearRegression(optimizer=sgd_optim), "sgd_optim"),
+    (LinearRegressionScratch(num_inputs=5, optimizer=sgd_optim), "sgd_grad_optim")
+    #(LeNet(lr=0.3), "lenet")
 ]
 
 for model,model_name in models:
-    trainer = Trainer(max_epochs=1, num_gpus=1)
+    trainer = Trainer(max_epochs=10, num_gpus=1)
     
-    #data = CH11DataModule(batch_size = 10, num_train=750, num_val=750)
-    data = FashionMNIST(batch_size=256)
+    data = CH11DataModule(num_train=750, num_val=750)
+    #data = FashionMNIST(batch_size=256)
     #data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
     trainer.fit(model, data)
 
@@ -77,6 +77,10 @@ for model,model_name in models:
     train_accuracy = stats.get_train_epoch_accuracy_stat()[-1]
     val_accuracy = stats.get_val_epoch_accuracy_stat()[-1]
     print(f'train loss {train_loss}, val loss {val_loss}, train accuracy {train_accuracy}, val accuracy {val_accuracy}')
+
+    train_loss = stats.get_train_epoch_loss_stat()
+    for (x, y) in train_loss:
+        board.draw(x, y, label=f'{model_name}')
 
 
 plt.show()

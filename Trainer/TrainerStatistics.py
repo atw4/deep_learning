@@ -11,11 +11,11 @@ class TrainerStatistics:
                  capture_train_per_epoch=1,
                  capture_valid_per_epoch=1,
 
-                 show_train_epoch_loss_stat=True,
-                 show_val_epoch_loss_stat=True,
+                 show_train_epoch_loss_stat=False,
+                 show_val_epoch_loss_stat=False,
 
-                 show_train_epoch_accuracy_stat=True,
-                 show_val_epoch_accuracy_stat=True):
+                 show_train_epoch_accuracy_stat=False,
+                 show_val_epoch_accuracy_stat=False):
 
         self.num_train_batches = num_train_batches
         self.num_val_batches = num_val_batches
