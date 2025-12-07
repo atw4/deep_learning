@@ -19,15 +19,16 @@ class Trainer:
 
     def prepare_model(self, model):
         model.to(self.device())
-        self.model = model
+        # Initialize Lazy Parameters
+        lazy_batch = self.prepare_batch(next(iter(self.train_dataloader)))
+        model.training_step(lazy_batch)
+
+        self.jit_model = torch.jit.script(model)
 
     def fit(self, model, data):
         self.prepare_data(data)
         self.prepare_model(model)
 
-        # Initialize Lazy Parameters
-        lazy_batch = self.prepare_batch(next(iter(self.train_dataloader)))
-        self.model.training_step(lazy_batch)
 
         self.optim = model.configure_optimizers()
         self.lr_scheduler = model.configure_lr_scheduler(self.optim)
@@ -45,7 +46,7 @@ class Trainer:
         return batch
 
     def fit_epoch(self):
-        self.model.train()
+        self.jit_model.train()
 
         self.stats.startEpoch(True)
         epoch_loss = 0
@@ -53,7 +54,7 @@ class Trainer:
         for train_batch_idx, batch in enumerate(self.train_dataloader):
             self.stats.startBatch(train_batch_idx)
 
-            loss, accuracy = self.model.training_step(self.prepare_batch(batch))
+            loss, accuracy = self.jit_model.training_step(self.prepare_batch(batch))
             scalar_loss = loss.item()
             epoch_loss += scalar_loss
             self.stats.setBatchStat("loss", scalar_loss)
@@ -67,7 +68,7 @@ class Trainer:
             with torch.no_grad():
                 loss.backward()
                 if self.gradient_clip_val > 0:
-                    self.clip_gradients(self.gradient_clip_val, self.model)
+                    self.clip_gradients(self.gradient_clip_val, self.jit_model)
                 self.optim.step()
 
             self.stats.endBatch()
@@ -83,7 +84,7 @@ class Trainer:
 
         if self.val_dataloader is None:
             return
-        self.model.eval()
+        self.jit_model.eval()
 
         self.stats.startEpoch(False)
         epoch_loss = 0
@@ -92,7 +93,7 @@ class Trainer:
             self.stats.startBatch(val_batch_idx)
 
             with torch.no_grad():
-                loss, accuracy = self.model.validation_step(self.prepare_batch(batch))
+                loss, accuracy = self.jit_model.validation_step(self.prepare_batch(batch))
                 scalar_loss = loss.item()
                 epoch_loss += scalar_loss
                 self.stats.setBatchStat("loss", scalar_loss)

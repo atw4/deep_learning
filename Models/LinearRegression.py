@@ -2,6 +2,7 @@
 #!/usr/bin/env python3
 import torch
 from torch import nn
+import torch.nn.functional as F
 from Models.Module import Module
 
 
@@ -15,8 +16,7 @@ class LinearRegression(Module):
         self.net.bias.data.fill_(0)
 
     def loss(self, y_hat, y):
-        fn = nn.MSELoss()
-        return fn(y_hat, y), None
+        return F.mse_loss(y_hat, y), None
 
     def configure_optimizers(self):
         return self.optimizer(self.parameters())
