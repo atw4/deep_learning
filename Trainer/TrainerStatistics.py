@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from Utility.Timer import Timer
-from ProgressBoard import ProgressBoard
+from Utility.ProgressBoard import ProgressBoard
 import torch
 import time
 import math

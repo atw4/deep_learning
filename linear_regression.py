@@ -1,3 +1,4 @@
+from Utility.ProgressBoard import ProgressBoard
 from Utility.Timer import Timer
 import Utility.Utility as Utility
 from DataModules.CH11DataModule import CH11DataModule
@@ -7,19 +8,46 @@ from Trainer.Trainer import Trainer
 from DataModules.SyntheticRegressionData import SyntheticRegressionData
 import torch
 
-#from ProgressBoard import ProgressBoard
-import ProgressBoard
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import torchvision
+from DataModules.CIFAR10 import CIFAR10
 
 from PIL import Image
 
+#def apply(img, aug, num_rows=2, num_cols=4, scale=1.5):
+    #Y = [aug(img) for _ in range(num_rows * num_cols)]
+    #ProgressBoard.show_images(Y, num_rows, num_cols, scale=scale)
+#
+#img = Image.open("./data/cat1.jpg")
+#apply(img, torchvision.transforms.RandomHorizontalFlip())
+#apply(img, torchvision.transforms.RandomVerticalFlip())
+#apply(img, torchvision.transforms.RandomResizedCrop((200, 200), scale=(0.1, 1), ratio=(0.5, 2)))
+#apply(img, torchvision.transforms.ColorJitter(brightness=0.5, contrast=0, saturation=0, hue=0))
+#apply(img, torchvision.transforms.ColorJitter(brightness=0.0, contrast=0, saturation=0, hue=0.5))
+#apply(img, torchvision.transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5))
 
-img = Image.open("./data/cat1.jpg")
-plt.imshow(img)
+#color_aug = torchvision.transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5)
+#shape_aug = torchvision.transforms.RandomResizedCrop((200, 200), scale=(0.1, 1), ratio=(0.5, 2))
+#augs = torchvision.transforms.Compose([
+    #torchvision.transforms.RandomHorizontalFlip(), color_aug, shape_aug
+#])
+#apply(img, augs)
+#
+data = CIFAR10(batch_size=32)
+train_dataloader = data.train_dataloader()
+batch = next(iter(train_dataloader))
+X, y = batch
+print(X.shape)
+
+
+    
+ProgressBoard.show_images(X.permute(0, 2, 3, 1), 4, 8, scale=0.8)
 plt.show()
 
+
+    
 
 #c = torch.tensor(0.5)
 
