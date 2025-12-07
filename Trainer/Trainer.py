@@ -6,12 +6,24 @@ import Utility.Utility as Utility
 from Trainer.TrainerStatistics import TrainerStatistics
 
 class Trainer:
-    def __init__(self, max_epochs, num_gpus=0, gradient_clip_val=0):
+    def __init__(self, max_epochs, model, data, num_gpus=0, gradient_clip_val=0, is_debug=False):
         self.max_epochs = max_epochs
         self.num_gpus = num_gpus
         self.gradient_clip_val = gradient_clip_val
+        self.is_debug = is_debug
 
         self.gpus = [Utility.gpu(i) for i in range(min(num_gpus, Utility.num_gpus()))]
+
+        self.prepare_data(data)
+        self.prepare_model(model)
+
+
+        self.optim = model.configure_optimizers()
+        self.lr_scheduler = model.configure_lr_scheduler(self.optim)
+
+        num_train_batches = len(self.train_dataloader)
+        num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
+        self.stats = TrainerStatistics(num_train_batches, num_val_batches)
 
     def prepare_data(self, data):
         self.train_dataloader = data.train_dataloader()
@@ -23,20 +35,12 @@ class Trainer:
         lazy_batch = self.prepare_batch(next(iter(self.train_dataloader)))
         model.training_step(lazy_batch)
 
-        self.jit_model = torch.jit.script(model)
+        if self.is_debug:
+            self.jit_model = model
+        else:
+            self.jit_model = torch.jit.script(model)
 
-    def fit(self, model, data):
-        self.prepare_data(data)
-        self.prepare_model(model)
-
-
-        self.optim = model.configure_optimizers()
-        self.lr_scheduler = model.configure_lr_scheduler(self.optim)
-
-        num_train_batches = len(self.train_dataloader)
-        num_val_batches = (len(self.val_dataloader) if self.val_dataloader is not None else 0)
-        self.stats = TrainerStatistics(num_train_batches, num_val_batches)
-        
+    def fit(self):
         for _ in range(self.max_epochs):
             self.fit_epoch()
 

@@ -19,6 +19,7 @@ import math
 
 from ProgressBoard import ProgressBoard
 import matplotlib.pyplot as plt
+from Utility.Benchmark import Benchmark
 
 #trainer = Trainer(max_epochs=30, num_gpus=1)
 #data = FashionMNIST(batch_size=256)
@@ -61,17 +62,19 @@ models = [
     #(LinearRegressionScratch(num_inputs=5, optimizer=adadelta_scratch_optim), "adadelta_scratch"),
     #(LinearRegression(optimizer=adadelta_optim), "adadelta"),
     #(LinearRegression(optimizer=sgd_optim), "sgd_optim_scheduler"),
-    (LinearRegression(optimizer=sgd_optim, lr_scheduler=multistep_scheduler), "sgd_optim")
-    #(LeNet(lr=0.3), "lenet")
+    #(LinearRegression(optimizer=sgd_optim, lr_scheduler=multistep_scheduler), "sgd_optim")
+    (LeNet(lr=0.3, lr_scheduler=multistep_scheduler), "lenet")
 ]
 
-for model,model_name in models:
-    trainer = Trainer(max_epochs=10, num_gpus=1)
-    
-    data = CH11DataModule(num_train=750, num_val=750)
-    #data = FashionMNIST(batch_size=256)
-    #data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
-    trainer.fit(model, data)
+#data = CH11DataModule(num_train=750, num_val=750)
+data = FashionMNIST(batch_size=256)
+#data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
+for is_debug in [False, True]:
+    model = models[0][0]
+    trainer = Trainer(max_epochs=10, num_gpus=1, model=model, data=data, is_debug=is_debug)
+
+    with Benchmark(f"is_debug: {is_debug}"):
+        trainer.fit()
 
     stats = trainer.stats
     train_loss = stats.get_train_epoch_loss_stat()[-1]
@@ -79,10 +82,6 @@ for model,model_name in models:
     train_accuracy = stats.get_train_epoch_accuracy_stat()[-1]
     val_accuracy = stats.get_val_epoch_accuracy_stat()[-1]
     print(f'train loss {train_loss}, val loss {val_loss}, train accuracy {train_accuracy}, val accuracy {val_accuracy}')
-
-    train_loss = stats.get_train_epoch_loss_stat()
-    for (x, y) in train_loss:
-        board.draw(x, y, label=f'{model_name}')
 
 
 plt.show()
