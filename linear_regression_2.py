@@ -63,18 +63,15 @@ models = [
     #(LinearRegression(optimizer=adadelta_optim), "adadelta"),
     #(LinearRegression(optimizer=sgd_optim), "sgd_optim_scheduler"),
     #(LinearRegression(optimizer=sgd_optim, lr_scheduler=multistep_scheduler), "sgd_optim")
-    (LeNet(lr=0.3, lr_scheduler=multistep_scheduler), "lenet")
+    #(LeNet(lr=0.3, lr_scheduler=multistep_scheduler), "lenet")
 ]
 
-#data = CH11DataModule(num_train=750, num_val=750)
-data = FashionMNIST(batch_size=256)
+data = CH11DataModule(num_train=750, num_val=750)
+#data = FashionMNIST(batch_size=256)
 #data = SyntheticRegressionData(w=torch.tensor([2, -3.4]), b=4.3)
-for is_debug in [False, True]:
-    model = models[0][0]
-    trainer = Trainer(max_epochs=10, num_gpus=1, model=model, data=data, is_debug=is_debug)
-
-    with Benchmark(f"is_debug: {is_debug}"):
-        trainer.fit()
+for model, model_name in models:
+    trainer = Trainer(max_epochs=100, num_gpus=1, model=model, data=data)
+    trainer.fit()
 
     stats = trainer.stats
     train_loss = stats.get_train_epoch_loss_stat()[-1]
@@ -86,6 +83,7 @@ for is_debug in [False, True]:
 
 plt.show()
 
+print(Utility.try_all_gpus())
 #num_epochs=10
 #
 #for t in range(num_epochs):

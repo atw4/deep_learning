@@ -6,7 +6,7 @@ import Utility.Utility as Utility
 from Trainer.TrainerStatistics import TrainerStatistics
 
 class Trainer:
-    def __init__(self, max_epochs, model, data, num_gpus=0, gradient_clip_val=0, is_debug=False):
+    def __init__(self, max_epochs, model, data, num_gpus=0, gradient_clip_val=0, is_debug=True):
         self.max_epochs = max_epochs
         self.num_gpus = num_gpus
         self.gradient_clip_val = gradient_clip_val
