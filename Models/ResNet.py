@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 from torch import nn
-from Classifer import Classifier
-from Residual import Residual
-import Utility
+from Models.Classifer import Classifier
+from Models.Residual import Residual
+import Utility.Utility
+
 
 
 class ResNet(Classifier):
@@ -22,7 +23,7 @@ class ResNet(Classifier):
             nn.LazyLinear(num_classes)
         ))
 
-        self.net.apply(Utility.init_cnn)
+        self.net.apply(self.init_cnn)
 
     def b1(self):
         return nn.Sequential(

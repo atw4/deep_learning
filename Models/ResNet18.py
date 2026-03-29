@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from ResNet import ResNet
+from Models.ResNet import ResNet
 
 class ResNet18(ResNet):
     def __init__(self, lr=0.1, num_classes=10):

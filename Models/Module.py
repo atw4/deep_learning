@@ -52,3 +52,12 @@ class Module(nn.Module):
         for layer in self.net:
             X = layer(X)
             print(layer.__class__.__name__, 'output shape:\t', X.shape)
+            
+
+    """Initialize weights for CNNs."""
+    def init_cnn(self, module):
+        if type(module) == nn.Linear or type(module) == nn.Conv2d:
+            nn.init.xavier_uniform_(module.weight)
+        """Initialize weights for CNNs."""
+        if type(module) == nn.Linear or type(module) == nn.Conv2d:
+            nn.init.xavier_uniform_(module.weight)

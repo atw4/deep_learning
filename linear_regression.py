@@ -13,6 +13,8 @@ import numpy as np
 import math
 import torchvision
 from DataModules.CIFAR10 import CIFAR10
+from Models.ResNet18 import ResNet18
+from Models.LeNet import LeNet 
 
 from PIL import Image
 
@@ -35,16 +37,21 @@ from PIL import Image
 #])
 #apply(img, augs)
 #
-data = CIFAR10(batch_size=32)
-train_dataloader = data.train_dataloader()
-batch = next(iter(train_dataloader))
-X, y = batch
-print(X.shape)
 
+if __name__ == "__main__":
+    board = ProgressBoard()
+    board.xlabel = 'epoch'
 
-    
-ProgressBoard.show_images(X.permute(0, 2, 3, 1), 4, 8, scale=0.8)
-plt.show()
+    data = CIFAR10(batch_size=32)
+    model = ResNet18()
+    #model = LeNet()
+
+    trainer = Trainer(10, model, data, num_gpus=1)
+    trainer_stats = trainer.stats
+    trainer_stats.show_train_epoch_loss_stat = True
+    trainer_stats.show_train_epoch_accuracy_stat = True
+    trainer_stats.show_val_epoch_accuracy_stat = True
+    trainer.fit()
 
 
     
