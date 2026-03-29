@@ -8,6 +8,8 @@ from Trainer.Trainer import Trainer
 from DataModules.SyntheticRegressionData import SyntheticRegressionData
 import torch
 
+from DataModules.HotDog import HotDog
+
 import matplotlib.pyplot as plt
 import numpy as np
 import math
@@ -38,20 +40,32 @@ from PIL import Image
 #apply(img, augs)
 #
 
+
+
 if __name__ == "__main__":
-    board = ProgressBoard()
-    board.xlabel = 'epoch'
 
-    data = CIFAR10(batch_size=32)
-    model = ResNet18()
-    #model = LeNet()
+    data = HotDog()
+    hotdogs = [data.train[i][0] for i in range(8)]
+    not_hotdogs = [data.train[-i - 1][0] for i in range(8)]
 
-    trainer = Trainer(10, model, data, num_gpus=1)
-    trainer_stats = trainer.stats
-    trainer_stats.show_train_epoch_loss_stat = True
-    trainer_stats.show_train_epoch_accuracy_stat = True
-    trainer_stats.show_val_epoch_accuracy_stat = True
-    trainer.fit()
+    ProgressBoard.show_images(hotdogs + not_hotdogs, 2, 8)
+
+    
+
+
+    #board = ProgressBoard()
+    #board.xlabel = 'epoch'
+#
+    #data = CIFAR10(batch_size=32)
+    #model = ResNet18()
+    ##model = LeNet()
+#
+    #trainer = Trainer(10, model, data, num_gpus=1)
+    #trainer_stats = trainer.stats
+    #trainer_stats.show_train_epoch_loss_stat = True
+    #trainer_stats.show_train_epoch_accuracy_stat = True
+    #trainer_stats.show_val_epoch_accuracy_stat = True
+    #trainer.fit()
 
 
     

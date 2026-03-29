@@ -57,6 +57,7 @@ def download(url, folder='./data', sha1_hash=None):
         f.write(r.content)
     return fname
 
+
 def extract(filename, folder=None):
     """Extract a zip/tar file into folder.
 
@@ -71,6 +72,8 @@ def extract(filename, folder=None):
     if folder is None:
         folder = base_dir
     fp.extractall(folder)
+
+    return folder
 
 
 def corr2d(X, K):
