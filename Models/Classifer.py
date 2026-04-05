@@ -30,7 +30,7 @@ class Classifier(Module):
 
         return compare.mean() if averaged else compare
 
-    def loss(self, Y_hat, Y, averaged: bool = True):
+    def loss(self, Y_hat, Y, averaged: bool = False):
         Y_hat = Y_hat.reshape((-1, Y_hat.shape[-1]))
         Y = Y.reshape((-1,))
         return F.cross_entropy(
