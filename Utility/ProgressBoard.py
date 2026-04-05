@@ -19,7 +19,7 @@ class ProgressBoard():
     def __init__(self, xlabel=None, ylabel=None, xlim=None,
                  ylim=None, xscale='linear', yscale='linear',
                  ls=['-', '--', '-.', ':'], colors=['C0', 'C1', 'C2', 'C3'],
-                 figsize=(3.5, 2.5), display=True, title=None):
+                 figsize=(3.5, 2.5), title=None):
 
         self.xlabel = xlabel
         self.ylabel = ylabel
@@ -30,7 +30,6 @@ class ProgressBoard():
         self.ls = ls
         self.colors = colors
         self.figsize = figsize
-        self.display = display
         self.title = title
         self.fig, self.axes = plt.subplots(figsize=figsize)
         self._output = display.Output()
