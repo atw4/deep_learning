@@ -8,11 +8,12 @@ from Models.Classifer import Classifier
 
 class ResNet18Pretrained(Classifier):
     def __init__(self, lr = 0.1, num_classes = 2):
-        super(ResNet18Pretrained, self).__init__(lr)
+        super(ResNet18Pretrained, self).__init__()
+        self.lr = lr
 
         self.net = torchvision.models.resnet18(pretrained = True)
         self.net.fc = nn.Linear(self.net.fc.in_features, num_classes)
-        nn.init.xavier_uiniform_(self.net.fc.weight)
+        nn.init.xavier_uniform_(self.net.fc.weight)
         
 
     def configure_optimizers(self):
