@@ -6,12 +6,11 @@ import Utility.Utility as Utility
 from Trainer.TrainerStatistics import TrainerStatistics
 
 class Trainer:
-    def __init__(self, max_epochs, model, data, num_gpus=0, gradient_clip_val=0):
+    def __init__(self, max_epochs, model, data, gradient_clip_val=0):
         self.max_epochs = max_epochs
-        self.num_gpus = num_gpus
         self.gradient_clip_val = gradient_clip_val
 
-        self.gpus = [Utility.gpu(i) for i in range(min(num_gpus, Utility.num_gpus()))]
+        self.gpus = [Utility.gpu(i) for i in range(Utility.num_gpus())]
 
         self.prepare_data(data)
         self.prepare_model(model)

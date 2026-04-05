@@ -7,7 +7,7 @@ import os
 import torch
 
 class HotDog(DataModule):
-    def __init__(self, batch_size=16):
+    def __init__(self, batch_size=128):
         super().__init__(num_of_workers=0)
         self.batch_size = batch_size
 
