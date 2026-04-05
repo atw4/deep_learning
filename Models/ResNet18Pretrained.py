@@ -2,15 +2,16 @@
 
 
 import torchvision
+import torch
 from torch import nn
 from Models.Classifer import Classifier
 
 class ResNet18Pretrained(Classifier):
-    def __init__(self, lr = 0.1, num_output = 2):
+    def __init__(self, lr = 0.1, num_classes = 2):
         super(ResNet18Pretrained, self).__init__(lr)
 
         self.net = torchvision.models.resnet18(pretrained = True)
-        self.net.fc = nn.Linear(self.net.fc.in_features, num_output)
+        self.net.fc = nn.Linear(self.net.fc.in_features, num_classes)
         nn.init.xavier_uiniform_(self.net.fc.weight)
         
 
@@ -21,4 +22,4 @@ class ResNet18Pretrained(Classifier):
         return torch.optim.SGD([{'params': params_1x},
                                    {'params': self.net.fc.parameters(),
                                     'lr': self.lr * 10}],
-                                lr=learning_rate, weight_decay=0.001)       
+                                lr=self.lr, weight_decay=0.001)       
