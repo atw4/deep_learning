@@ -9,7 +9,6 @@ class Classifier(Module):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    @torch.jit.export
     def training_step(self, batch: typing.Tuple[torch.Tensor, torch.Tensor]):
         Y_hat = self(*batch[:-1])
         loss = self.loss(Y_hat, batch[-1])
@@ -17,7 +16,6 @@ class Classifier(Module):
 
         return loss, accuracy
 
-    @torch.jit.export
     def validation_step(self, batch: typing.Tuple[torch.Tensor, torch.Tensor]):
         Y_hat = self(*batch[:-1])
         loss = self.loss(Y_hat, batch[-1])

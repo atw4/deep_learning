@@ -56,6 +56,3 @@ class Module(nn.Module):
     def init_cnn(self, module):
         if type(module) == nn.Linear or type(module) == nn.Conv2d:
             nn.init.xavier_uniform_(module.weight)
-        """Initialize weights for CNNs."""
-        if type(module) == nn.Linear or type(module) == nn.Conv2d:
-            nn.init.xavier_uniform_(module.weight)
