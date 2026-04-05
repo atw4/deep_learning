@@ -17,6 +17,7 @@ import torchvision
 from DataModules.CIFAR10 import CIFAR10
 from Models.ResNet18 import ResNet18
 from Models.LeNet import LeNet 
+from Models.ResNet18Pretrained import ResNet18Pretrained
 
 from PIL import Image
 
@@ -42,13 +43,15 @@ from PIL import Image
 
 
 
-if __name__ == "__main__":
+data = HotDog()
+model = ResNet18(num_classes=2)
 
-    data = HotDog()
-    hotdogs = [data.train[i][0] for i in range(8)]
-    not_hotdogs = [data.train[-i - 1][0] for i in range(8)]
-
-    ProgressBoard.show_images(hotdogs + not_hotdogs, 2, 8)
+trainer = Trainer(5, model, data)
+trainer_stats = trainer.stats
+trainer_stats.show_train_epoch_loss_stat = True
+trainer_stats.show_train_epoch_accuracy_stat = True
+trainer_stats.show_val_epoch_accuracy_stat = True
+trainer.fit()
 
     
 

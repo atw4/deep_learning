@@ -16,7 +16,6 @@ class Module(nn.Module):
         assert hasattr(self, 'net'), 'Neural network is not defined'
         return self.net(X)
 
-    @torch.jit.export
     def training_step(self, batch: typing.Tuple[torch.Tensor, torch.Tensor]):
         Y_hat = self(*batch[:-1])
         x = batch[-1]
@@ -24,7 +23,6 @@ class Module(nn.Module):
 
         return l
 
-    @torch.jit.export
     def validation_step(self, batch: typing.Tuple[torch.Tensor, torch.Tensor]):
         Y_hat = self(*batch[:-1])
         x = batch[-1]
