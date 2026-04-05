@@ -54,8 +54,6 @@ class ProgressBoard():
         line.append(Point(mean([p.x for p in points]),
                           mean([p.y for p in points])))
         points.clear()
-        if not self.display:
-            return
         #use_svg_display()
         self.axes.cla()
         if self.title: self.axes.set_title(self.title)
