@@ -19,7 +19,7 @@ class ProgressBoard():
     def __init__(self, xlabel=None, ylabel=None, xlim=None,
                  ylim=None, xscale='linear', yscale='linear',
                  ls=['-', '--', '-.', ':'], colors=['C0', 'C1', 'C2', 'C3'],
-                 figsize=(3.5, 2.5), display=True):
+                 figsize=(3.5, 2.5), display=True, title=None):
 
         self.xlabel = xlabel
         self.ylabel = ylabel
@@ -31,6 +31,7 @@ class ProgressBoard():
         self.colors = colors
         self.figsize = figsize
         self.display = display
+        self.title = title
         self.fig, self.axes = plt.subplots(figsize=figsize)
 
     def draw(self, x, y, label, every_n=1):
@@ -55,6 +56,7 @@ class ProgressBoard():
             return
         #use_svg_display()
         self.axes.cla()
+        if self.title: self.axes.set_title(self.title)
         plt_lines, labels = [], []
         for (k, v), ls, color in zip(self.data.items(), self.ls, self.colors):
             plt_lines.append(self.axes.plot([p.x for p in v], [p.y for p in v],

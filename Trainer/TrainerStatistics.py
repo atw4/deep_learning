@@ -5,7 +5,6 @@ from Utility.ProgressBoard import ProgressBoard
 import torch
 import time
 import math
-import matplotlib.pyplot as plt
 
 class TrainerStatistics:
     def __init__(self, num_train_batches, num_val_batches,
@@ -27,8 +26,8 @@ class TrainerStatistics:
         self.show_train_epoch_accuracy_stat = show_train_epoch_accuracy_stat
         self.show_val_epoch_accuracy_stat = show_val_epoch_accuracy_stat
 
-        self.train_epochs = [] 
-        self.val_epochs = [] 
+        self.train_epochs = []
+        self.val_epochs = []
          
         # Batches train/val
         self.train_batches = []
@@ -145,9 +144,7 @@ class TrainerStatistics:
     def plot(self, x, y, label):
         """Plot a point in animation."""
         self.board.xlabel = 'epoch'
-
         self.board.draw(x, y, label)
-        plt.show()
 
     #Accuracy related stats
     def get_train_epoch_accuracy_stat(self):
