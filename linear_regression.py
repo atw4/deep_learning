@@ -44,14 +44,16 @@ from PIL import Image
 
 
 data = HotDog()
-model = ResNet18(num_classes=2)
+resnet = ResNet18(num_classes=2, lr=5e-5)
+resnet_pretrained = ResNet18Pretrained(num_classes=2, lr=5e-5)
 
-trainer = Trainer(5, model, data)
-trainer_stats = trainer.stats
-trainer_stats.show_train_epoch_loss_stat = True
-trainer_stats.show_train_epoch_accuracy_stat = True
-trainer_stats.show_val_epoch_accuracy_stat = True
-trainer.fit()
+for model in [resnet, resnet_pretrained]:
+    trainer = Trainer(5, model, data)
+    trainer_stats = trainer.stats
+    trainer_stats.show_train_epoch_loss_stat = True
+    trainer_stats.show_train_epoch_accuracy_stat = True
+    trainer_stats.show_val_epoch_accuracy_stat = True
+    trainer.fit()
 
     
 
