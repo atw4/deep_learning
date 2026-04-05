@@ -19,7 +19,7 @@ class ProgressBoard():
     def __init__(self, xlabel=None, ylabel=None, xlim=None,
                  ylim=None, xscale='linear', yscale='linear',
                  ls=['-', '--', '-.', ':'], colors=['C0', 'C1', 'C2', 'C3'],
-                 fig=None, axes=None, figsize=(3.5, 2.5), display=True):
+                 figsize=(3.5, 2.5), display=True):
 
         self.xlabel = xlabel
         self.ylabel = ylabel
@@ -29,12 +29,9 @@ class ProgressBoard():
         self.yscale = yscale
         self.ls = ls
         self.colors = colors
-        self.fig = fig
-        self.axes = axes
         self.figsize = figsize
         self.display = display
-
-        #plt.ticklabel_format(style='plain', useOffset=False)
+        self.fig, self.axes = plt.subplots(figsize=figsize)
 
     def draw(self, x, y, label, every_n=1):
         """Defined in :numref:`sec_utils`"""
@@ -57,22 +54,20 @@ class ProgressBoard():
         if not self.display:
             return
         #use_svg_display()
-        if self.fig is None:
-            self.fig = plt.figure(figsize=self.figsize)
+        self.axes.cla()
         plt_lines, labels = [], []
         for (k, v), ls, color in zip(self.data.items(), self.ls, self.colors):
-            plt_lines.append(plt.plot([p.x for p in v], [p.y for p in v],
+            plt_lines.append(self.axes.plot([p.x for p in v], [p.y for p in v],
                                           linestyle=ls, color=color)[0])
             labels.append(k)
-        axes = self.axes if self.axes else plt.gca()
-        if self.xlim: axes.set_xlim(self.xlim)
-        if self.ylim: axes.set_ylim(self.ylim)
+        if self.xlim: self.axes.set_xlim(self.xlim)
+        if self.ylim: self.axes.set_ylim(self.ylim)
         if not self.xlabel: self.xlabel = self.x
-        axes.set_xlabel(self.xlabel)
-        axes.set_ylabel(self.ylabel)
-        axes.set_xscale(self.xscale)
-        axes.set_yscale(self.yscale)
-        axes.legend(plt_lines, labels)
+        self.axes.set_xlabel(self.xlabel)
+        self.axes.set_ylabel(self.ylabel)
+        self.axes.set_xscale(self.xscale)
+        self.axes.set_yscale(self.yscale)
+        self.axes.legend(plt_lines, labels)
         display.display(self.fig)
         display.clear_output(wait=True)
 
