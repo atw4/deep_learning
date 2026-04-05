@@ -7,13 +7,14 @@ from torch import nn
 from Models.Classifer import Classifier
 
 class ResNet18Pretrained(Classifier):
-    def __init__(self, lr = 0.1, num_classes = 2):
+    def __init__(self, lr = 0.1, num_classes = 2, pretrained = True):
         super().__init__()
         self.lr = lr
 
-        self.net = torchvision.models.resnet18(pretrained = True)
+        self.net = torchvision.models.resnet18(pretrained = pretrained)
         self.net.fc = nn.Linear(self.net.fc.in_features, num_classes)
-        nn.init.xavier_uniform_(self.net.fc.weight)
+        if pretrained:
+            nn.init.xavier_uniform_(self.net.fc.weight)
         
 
     def configure_optimizers(self):
