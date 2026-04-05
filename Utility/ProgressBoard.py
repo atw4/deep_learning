@@ -5,6 +5,7 @@ import collections
 from matplotlib import pyplot as plt
 from matplotlib_inline import backend_inline
 from IPython import display
+from ipywidgets import Output
 import numpy as np
 import torch
 
@@ -32,7 +33,7 @@ class ProgressBoard():
         self.figsize = figsize
         self.title = title
         self.fig, self.axes = plt.subplots(figsize=figsize)
-        self._output = display.Output()
+        self._output = Output()
         display.display(self._output)
 
     def draw(self, x, y, label, every_n=1):
