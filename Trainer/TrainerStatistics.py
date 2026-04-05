@@ -144,6 +144,7 @@ class TrainerStatistics:
 
     def plot(self, x, y, label):
         """Plot a point in animation."""
+        print("plotting something")
         self.board.xlabel = 'epoch'
 
         self.board.draw(x, y, label)
