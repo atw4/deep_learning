@@ -31,7 +31,8 @@ class Trainer:
         model.to(self.device())
         # Initialize Lazy Parameters
         lazy_batch = self.prepare_batch(next(iter(self.train_dataloader)))
-        model.training_step(lazy_batch)
+        with torch.no_grad():
+            model.training_step(lazy_batch)
 
         self.model = model
 
