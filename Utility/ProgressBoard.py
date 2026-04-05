@@ -33,6 +33,8 @@ class ProgressBoard():
         self.display = display
         self.title = title
         self.fig, self.axes = plt.subplots(figsize=figsize)
+        self._output = display.Output()
+        display.display(self._output)
 
     def draw(self, x, y, label, every_n=1):
         """Defined in :numref:`sec_utils`"""
@@ -70,8 +72,9 @@ class ProgressBoard():
         self.axes.set_xscale(self.xscale)
         self.axes.set_yscale(self.yscale)
         self.axes.legend(plt_lines, labels)
-        display.display(self.fig)
-        display.clear_output(wait=True)
+        with self._output:
+            display.clear_output(wait=True)
+            display.display(self.fig)
 
     def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):
         """Plot a list of images.
