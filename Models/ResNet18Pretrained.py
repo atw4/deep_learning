@@ -8,7 +8,7 @@ from Models.Classifer import Classifier
 
 class ResNet18Pretrained(Classifier):
     def __init__(self, lr = 0.1, num_classes = 2):
-        super(ResNet18Pretrained, self).__init__()
+        super().__init__()
         self.lr = lr
 
         self.net = torchvision.models.resnet18(pretrained = True)
