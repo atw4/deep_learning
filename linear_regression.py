@@ -47,7 +47,7 @@ data = HotDog()
 resnet = ResNet18(num_classes=2, lr=5e-5)
 resnet_pretrained = ResNet18Pretrained(num_classes=2, lr=5e-5)
 
-for model in [resnet, resnet_pretrained]:
+for model in [resnet_pretrained, resnet]:
     trainer = Trainer(5, model, data)
     trainer_stats = trainer.stats
     trainer_stats.show_train_epoch_loss_stat = True
