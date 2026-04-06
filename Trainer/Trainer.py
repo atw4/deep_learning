@@ -65,10 +65,11 @@ class Trainer:
                 self.stats.setBatchStat("accuracy", scalar_accuracy)
              
             self.optim.zero_grad()
-            loss.backward()
-            if self.gradient_clip_val > 0:
-                self.clip_gradients(self.gradient_clip_val, self.model)
-            self.optim.step()
+            with torch.no_grad():
+                loss.backward()
+                if self.gradient_clip_val > 0:
+                    self.clip_gradients(self.gradient_clip_val, self.model)
+                self.optim.step()
 
             self.stats.endBatch()
         avg_epoch_loss = epoch_loss / len(self.train_dataloader) if len(self.train_dataloader) > 0 else 0
