@@ -27,7 +27,7 @@ def dropout_layer(X, dropout):
     mask = (torch.rand(X.shape) > dropout).float()
     return mask * X / (1.0 - dropout)
 
-def download(url, folder='./data', sha1_hash=None):
+def download(url, folder='/home/sagemaker-user/', sha1_hash=None):
     """Download a file to folder and return the local filepath.
 
     Defined in :numref:`sec_utils`"""
