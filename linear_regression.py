@@ -43,30 +43,30 @@ from PIL import Image
 
 
 
-data = CH11DataModule(num_train=750, num_val=750)
-
-sgd_optim = lambda params: torch.optim.SGD(params, 0.1)
-model = LinearRegression(optimizer=sgd_optim)
-
-trainer = Trainer(max_epochs=10, model=model, data=data)
-trainer_stats = trainer.stats
-trainer_stats.show_train_epoch_loss_stat = True
-trainer_stats.show_val_epoch_loss_stat = True
-trainer.fit()
-
-
-#data = HotDog()
-#resnet = ResNet18(num_classes=2, lr=5e-4)
-#resnet_pretrained = ResNet18Pretrained(num_classes=2, lr=5e-5)
+#data = CH11DataModule(num_train=750, num_val=750)
 #
-#for model, name in [(resnet_pretrained, 'ResNet18 Pretrained'), (resnet, 'ResNet18')]:
-    #trainer = Trainer(5, model, data)
-    #trainer_stats = trainer.stats
-    #trainer_stats.board.title = name
-    #trainer_stats.show_train_epoch_loss_stat = True
-    #trainer_stats.show_train_epoch_accuracy_stat = True
-    #trainer_stats.show_val_epoch_accuracy_stat = True
-    #trainer.fit()
+#sgd_optim = lambda params: torch.optim.SGD(params, 0.1)
+#model = LinearRegression(optimizer=sgd_optim)
+#
+#trainer = Trainer(max_epochs=10, model=model, data=data)
+#trainer_stats = trainer.stats
+#trainer_stats.show_train_epoch_loss_stat = True
+#trainer_stats.show_val_epoch_loss_stat = True
+#trainer.fit()
+
+
+data = HotDog()
+resnet = ResNet18(num_classes=2, lr=5e-4)
+resnet_pretrained = ResNet18Pretrained(num_classes=2, lr=5e-5)
+
+for model, name in [(resnet_pretrained, 'ResNet18 Pretrained'), (resnet, 'ResNet18')]:
+    trainer = Trainer(5, model, data)
+    trainer_stats = trainer.stats
+    trainer_stats.board.title = name
+    trainer_stats.show_train_epoch_loss_stat = True
+    trainer_stats.show_train_epoch_accuracy_stat = True
+    trainer_stats.show_val_epoch_accuracy_stat = True
+    trainer.fit()
 
     
 
