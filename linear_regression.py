@@ -46,7 +46,7 @@ from PIL import Image
 data = CH11DataModule(num_train=750, num_val=750)
 
 sgd_optim = lambda params: torch.optim.SGD(params, 0.1)
-model = LinearRegression(optimizer=sgd_optim),
+model = LinearRegression(optimizer=sgd_optim)
 
 trainer = Trainer(max_epochs=10, model=model, data=data)
 trainer_stats = trainer.stats
