@@ -64,9 +64,10 @@ class ProgressBoard():
             labels.append(k)
         if self.xlim: self.axes.set_xlim(self.xlim)
         if self.ylim: self.axes.set_ylim(self.ylim)
-        if not self.xlabel: self.xlabel = self.x
-        self.axes.set_xlabel(self.xlabel)
-        self.axes.set_ylabel(self.ylabel)
+        if self.xlabel:
+            self.axes.set_xlabel(self.xlabel)
+        if self.ylabel:
+            self.axes.set_ylabel(self.ylabel)
         self.axes.set_xscale(self.xscale)
         self.axes.set_yscale(self.yscale)
         self.axes.legend(plt_lines, labels)
