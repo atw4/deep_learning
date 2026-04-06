@@ -23,6 +23,17 @@ astype = lambda x, *args, **kwargs: x.type(*args, **kwargs)
 reduce_sum = lambda x, *args, **kwargs: x.sum(*args, **kwargs)
 size = lambda x, *args, **kwargs: x.numel(*args, **kwargs)
 
+def set_axes(axes, xlabel, ylabel, xlim, ylim, xscale, yscale, legend):
+    """Set the axes for matplotlib.
+
+    Defined in :numref:`sec_calculus`"""
+    axes.set_xlabel(xlabel), axes.set_ylabel(ylabel)
+    axes.set_xscale(xscale), axes.set_yscale(yscale)
+    axes.set_xlim(xlim),     axes.set_ylim(ylim)
+    if legend:
+        axes.legend(legend)
+    axes.grid()
+
 def use_svg_display():
     """Use the svg format to display a plot in Jupyter.
 
