@@ -16,6 +16,12 @@ class ResNet18Pretrained(Classifier):
         nn.init.xavier_uniform_(self.net.fc.weight)
         
 
+    def loss(self, Y_hat, Y, averaged=True):
+        import torch.nn.functional as F
+        Y_hat = Y_hat.reshape((-1, Y_hat.shape[-1]))
+        Y = Y.reshape((-1,))
+        return F.cross_entropy(Y_hat, Y, reduction='none').sum()
+
     def configure_optimizers(self):
         params_1x = [param for name, param in self.net.named_parameters()
              if name not in ["fc.weight", "fc.bias"]]
