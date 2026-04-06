@@ -11,7 +11,7 @@ class ResNet18Pretrained(Classifier):
         super().__init__()
         self.lr = lr
 
-        self.net = torchvision.models.resnet18(pretrained = pretrained)
+        self.net = torchvision.models.resnet18(pretrained = True)
         self.net.fc = nn.Linear(self.net.fc.in_features, num_classes)
         nn.init.xavier_uniform_(self.net.fc.weight)
         
