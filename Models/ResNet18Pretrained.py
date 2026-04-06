@@ -4,6 +4,7 @@
 import torchvision
 import torch
 from torch import nn
+import torch.nn.functional as F
 from Models.Classifer import Classifier
 
 class ResNet18Pretrained(Classifier):
@@ -17,10 +18,9 @@ class ResNet18Pretrained(Classifier):
         
 
     def loss(self, Y_hat, Y, averaged=True):
-        import torch.nn.functional as F
         Y_hat = Y_hat.reshape((-1, Y_hat.shape[-1]))
         Y = Y.reshape((-1,))
-        return F.cross_entropy(Y_hat, Y, reduction='none').sum()
+        return F.cross_entropy(Y_hat, Y, reduction='none')
 
     def configure_optimizers(self):
         params_1x = [param for name, param in self.net.named_parameters()
