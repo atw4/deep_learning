@@ -8,6 +8,7 @@ import zipfile
 import collections
 import math
 from torch import nn
+from Utility import Constants
 
 DATA_URL = 'http://d2l-data.s3-accelerate.amazonaws.com/'
 
@@ -27,7 +28,7 @@ def dropout_layer(X, dropout):
     mask = (torch.rand(X.shape) > dropout).float()
     return mask * X / (1.0 - dropout)
 
-def download(url, folder='/home/sagemaker-user/', sha1_hash=None):
+def download(url, folder = Constants.DATA_FOLDER, sha1_hash=None):
     """Download a file to folder and return the local filepath.
 
     Defined in :numref:`sec_utils`"""
