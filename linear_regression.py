@@ -44,7 +44,7 @@ from PIL import Image
 
 
 data = HotDog()
-resnet = ResNet18Pretrained(num_classes=2, lr=5e-4, pretrained = False)
+resnet = ResNet18Pretrained(num_classes=2, lr=5e-5, pretrained = False)
 resnet_pretrained = ResNet18Pretrained(num_classes=2, lr=5e-5)
 
 for model, name in [(resnet_pretrained, 'ResNet18 Pretrained'), (resnet, 'ResNet18')]:
